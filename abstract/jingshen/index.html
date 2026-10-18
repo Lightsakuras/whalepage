@@ -360,7 +360,7 @@ function drawImage(){
   x.fillStyle = 'rgba(255,255,255,.42)'; x.font = '400 24px "PingFang SC",sans-serif';
   x.fillText('ligsa · 8 道题测你的精神状态', pad, H-62);
   x.textAlign = 'right';
-  x.fillText('abstract.whale.page', W-pad, H-62); x.textAlign = 'left';
+  x.fillText('ligsa.work', W-pad, H-62); x.textAlign = 'left';
 
   return c.toDataURL('image/png');
 }
@@ -415,6 +415,34 @@ $('again').onclick = function(){
   score = {'疯':0,'丧':0,'抽象':0,'稳':0}; idx = 0;
   show('s-cover');
 };
+/* ============ 演示 / 截图用：?r=<结果名>&poster=1 ============ */
+(function(){
+  try{
+    var p = new URLSearchParams(location.search);
+    var name = p.get('r');
+    if(!name) return;
+    var hit = null;
+    Object.keys(RES).forEach(function(k){
+      RES[k].forEach(function(it, i){ if(it.n === name) hit = {k:k, tier:i}; });
+    });
+    if(!hit) return;
+    order.forEach(function(k){ score[k] = 0; });
+    score[hit.k] = hit.tier + 1;
+    result();
+    if(p.get('poster') === '1'){
+      setTimeout(function(){
+        var b = $('mkimg'); if(!b) return;
+        b.click();
+        setTimeout(function(){
+          var im = document.querySelector('.shot img') || document.querySelector('img[src^="data:image"]');
+          if(!im) return;
+          var src = im.src;
+          document.documentElement.innerHTML = '<body style="margin:0;background:#07080c;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden"><img src="' + src + '" style="width:1080px;height:1440px;display:block"></body>';
+        }, 1000);
+      }, 400);
+    }
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
