@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>抽象语录生成器 · ligsa</title>
+<meta name="description" content="选一个情绪，一键生成能发出去的抽象语录。可以复制，也可以存成图。">
+<style>
+  :root{
+    --bg:#07080a; --fg:#f2f4f8; --dim:#7b8494;
+    --acc:#b6ff3c; --acc2:#22d3ee;
+    --line:rgba(255,255,255,.09);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,-apple-system,"Noto Sans SC",sans-serif;
+    display:flex;flex-direction:column;
+    background-image:radial-gradient(120% 60% at 50% -10%,rgba(182,255,60,.10),transparent 60%),
+                     radial-gradient(90% 50% at 90% 110%,rgba(34,211,238,.10),transparent 60%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+  }
+  .app{width:100%;max-width:680px;margin:0 auto;padding:22px 22px calc(18px + env(safe-area-inset-bottom));
+       display:flex;flex-direction:column;min-height:100%;flex:1}
+  .top{display:flex;align-items:center;justify-content:space-between;font-size:13px;letter-spacing:.14em;color:var(--dim)}
+  .top b{color:var(--acc);font-weight:700}
+  .tabs{display:flex;gap:9px;overflow-x:auto;padding:18px 0 4px;margin:0 -22px;padding-left:22px;padding-right:22px;
+        scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);
+       color:var(--dim);font-size:14px;cursor:pointer;transition:.18s;white-space:nowrap}
+  .tab:active{transform:scale(.96)}
+  .tab.on{background:var(--acc);border-color:var(--acc);color:#0a0c08;font-weight:700}
+  .stage{flex:1;display:flex;flex-direction:column;justify-content:center;padding:26px 2px 20px;position:relative}
+  .mood{font-size:12px;letter-spacing:.2em;color:var(--acc2);margin-bottom:18px;text-transform:uppercase}
+  .line{margin:0;font-size:clamp(27px,7.4vw,54px);line-height:1.62;font-weight:800;letter-spacing:.01em;
+        text-wrap:balance;word-break:break-word}
+  .line em{font-style:normal;color:var(--acc)}
+  .meta{margin-top:22px;font-size:13px;color:var(--dim);letter-spacing:.06em}
+  .bar{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-top:8px}
+  button{font:inherit;cursor:pointer;border:none;border-radius:14px;transition:.16s}
+  button:active{transform:scale(.97)}
+  .primary{background:var(--acc);color:#0a0c08;font-weight:800;font-size:17px;padding:16px 18px;letter-spacing:.04em}
+  .ghost{background:rgba(255,255,255,.06);color:var(--fg);border:1px solid var(--line);font-size:15px;padding:16px 16px}
+  .foot{margin-top:16px;display:flex;justify-content:space-between;font-size:12px;color:#4d5563;letter-spacing:.1em}
+  .toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,12px);background:rgba(20,24,20,.94);
+         color:var(--acc);border:1px solid rgba(182,255,60,.3);padding:11px 20px;border-radius:999px;font-size:14px;
+         opacity:0;pointer-events:none;transition:.24s;z-index:20}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .shot{position:fixed;inset:0;background:rgba(4,5,7,.94);display:none;flex-direction:column;align-items:center;
+        justify-content:center;gap:16px;padding:20px;z-index:30}
+  .shot.on{display:flex}
+  .shot img{max-width:100%;max-height:74vh;border-radius:14px;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+  .shot p{margin:0;font-size:14px;color:var(--dim);text-align:center;line-height:1.7}
+  .shot .row{display:flex;gap:10px}
+  .shot .row button{padding:13px 22px;font-size:15px}
+  @media (max-width:420px){ .bar{grid-template-columns:1fr auto auto} .ghost{padding:16px 13px;font-size:14px} }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><span><b>ligsa</b> · 抽象语录</span><span>NO.03</span></div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-k="emo">emo 忧郁</button>
+    <button class="tab" data-k="mad">发疯</button>
+    <button class="tab" data-k="lie">躺平</button>
+    <button class="tab" data-k="dog">舔狗</button>
+    <button class="tab" data-k="cow">牛马</button>
+    <button class="tab" data-k="abs">抽象</button>
+  </div>
+
+  <div class="stage">
+    <div class="mood" id="mood">EMO · 忧郁</div>
+    <p class="line" id="line">我在深夜思考人生，<br>人生说它已经睡了。</p>
+    <div class="meta" id="meta">第 1 / 14 条 · 点下面换一条</div>
+  </div>
+
+  <div class="bar">
+    <button class="primary" id="next">换一条</button>
+    <button class="ghost" id="copy">复制</button>
+    <button class="ghost" id="save">存图</button>
+  </div>
+
+  <div class="foot"><span>ligsa</span><span>ligsa.work/yulu</span></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="shot" id="shot">
+  <p>长按图片保存到相册<br>或者点下面按钮下载</p>
+  <img id="shotImg" alt="语录图">
+  <div class="row">
+    <button class="primary" id="dl">下载图片</button>
+    <button class="ghost" id="closeShot">关闭</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var DATA = {
+    emo: { name:'EMO · 忧郁', items:[
+      '我在深夜思考人生，<em>人生说它已经睡了</em>。',
+      '白天是个人，<em>晚上是个人设</em>。',
+      '我把难过调成了静音，<em>现在连自己都听不见</em>。',
+      '不是所有难过都需要理由，<em>但我的都有</em>。',
+      '情绪像 WiFi，满格的时候没人连，<em>掉线的时候全是消息</em>。',
+      '凌晨三点的清醒，<em>是白天欠下的</em>。',
+      '我没有崩溃，<em>我只是在低电量运行</em>。',
+      '心事攒够了，<em>就变成失眠</em>。',
+      '热闹是他们的，<em>我负责在角落把饮料喝完</em>。',
+      '我不是不想说话，<em>是说出来也没人接</em>。',
+      '我把自己修好了，<em>只是零件多了几个</em>。',
+      '有些人走着走着就散了，<em>有些人坐着坐着就哭了</em>。',
+      '天亮以后我还是那个正常人，<em>这就是最不正常的地方</em>。',
+      '我很好，<em>只是有点想消失一会儿</em>。'
+    ]},
+    mad: { name:'发疯 · 易燃', items:[
+      '我精神状态很好啊，<em>正在把文件拖进回收站</em>。',
+      '别惹我，<em>我现在是易燃易爆品</em>。',
+      '已疯，勿扰，<em>谢谢配合</em>。',
+      '我在努力保持冷静，<em>冷静快被我惹毛了</em>。',
+      '不是我脾气差，<em>是我的容忍额度已用完</em>。',
+      '刚才有一瞬间我想通了，<em>又没想通</em>。',
+      '我很好，<em>只是有点想砸东西</em>。',
+      '别管我，<em>我在跟空气对线</em>。',
+      '发疯是一种爱好，<em>不是问题</em>。',
+      '我的耐心是限量款，<em>已经停产了</em>。',
+      '再逼我，<em>我就要开始讲道理了</em>。',
+      '我不是在发疯，<em>我是在做压力测试</em>。',
+      '让我静静，<em>静静也快受不了了</em>。',
+      '我今天很有礼貌，<em>因为我在忍</em>。'
+    ]},
+    lie: { name:'躺平 · 节能', items:[
+      '努力不一定成功，<em>但不努力一定很舒服</em>。',
+      '我不是在摆烂，<em>我是在节能</em>。',
+      '卷不动了，我先躺一会儿，<em>你们继续</em>。',
+      '人生就像充电，<em>80% 最好，100% 会炸</em>。',
+      '躺平不是放弃，<em>是把姿态调低一点</em>。',
+      '今天什么都没做，<em>但今天也过去了</em>。',
+      '有目标是好事，<em>但我选择有枕头</em>。',
+      '我的野心很大，<em>但它需要午睡</em>。',
+      '别叫我起来，<em>我在地心引力里</em>。',
+      '奋斗是别人的事，<em>我负责鼓掌</em>。',
+      '我不是懒，<em>我是在保存实力</em>。',
+      '把期待降到最低，<em>每天都是惊喜</em>。',
+      '我已经把人生调成了<em>省电模式</em>。',
+      '比起改变世界，<em>我更想改变一下姿势</em>。'
+    ]},
+    dog: { name:'舔狗 · 上头', items:[
+      '你回我一个字，<em>我能开心一整天</em>。',
+      '我不缺爱，<em>我缺你回消息</em>。',
+      '你忙你的，我等你，<em>我有的是时间</em>。',
+      '我知道你不在意，<em>但我还是想发</em>。',
+      '世界很吵，<em>我只想听你说话</em>。',
+      '你的一句在吗，<em>够我脑补一整部剧</em>。',
+      '我把你放在第一位，<em>你把我放在已读</em>。',
+      '没关系，<em>我这个人主打一个不打扰</em>。',
+      '你不需要知道，<em>我连孩子名字都想好了</em>。',
+      '喜欢一个人是没有道理的，<em>所以我从不讲道理</em>。',
+      '我很好养活，<em>一个表情包就够</em>。',
+      '我们之间不是没可能，<em>是还没开始</em>。'
+    ]},
+    cow: { name:'牛马 · 班味', items:[
+      '早八的痛，<em>是工资买不起的</em>。',
+      '我的班味已经浓到<em>需要开窗通风</em>了。',
+      '老板画的饼，<em>够我吃三年</em>。',
+      '打工人的命，<em>是闹钟定的</em>。',
+      '我不讨厌工作，<em>我讨厌没有盼头的工作</em>。',
+      '周一的我，<em>比周一的天气还阴</em>。',
+      '我的梦想是，<em>不用定闹钟也能醒</em>。',
+      '上班使我快乐，<em>下班使我更快乐</em>。',
+      '工资到手那一刻，<em>我感觉自己白干了一个月</em>。',
+      '我正在成长，<em>主要长在黑眼圈上</em>。',
+      '别问我周末干嘛，<em>我在补觉，补上周的</em>。',
+      '我的工位很干净，<em>因为我不想来</em>。',
+      '能力越大责任越大，<em>所以我选择没有能力</em>。',
+      '每天都在离职，<em>每天都在打卡</em>。'
+    ]},
+    abs: { name:'抽象 · 浓度', items:[
+      '已读乱回，<em>是当代人的体面</em>。',
+      '我浓度过高，<em>需要稀释</em>。',
+      '建议给我配个说明书，<em>我自己也看不懂</em>。',
+      'CPU 烧了，<em>现在只剩 GPU 在硬撑</em>。',
+      '我这个人，<em>主打一个说不清</em>。',
+      '别问我，<em>我也刚来</em>。',
+      '我的世界像加载失败的网页，<em>白屏但是有音效</em>。',
+      '系统提示：<em>该用户正在重新连接自我</em>。',
+      '我的人生是草稿版，<em>还忘了保存</em>。',
+      '我很清醒，<em>清醒得像个 bug</em>。',
+      '我的脑子在开会，<em>但没人主持</em>。',
+      '我不是话少，<em>我是加载慢</em>。',
+      '这个世界我信,<em>但只信一半</em>。',
+      '我在进步，<em>主要是进步到放弃</em>。'
+    ]}
+  };
+
+  var cur = 'emo', idx = 0, lastIdx = -1;
+  var elLine=document.getElementById('line'), elMood=document.getElementById('mood'), elMeta=document.getElementById('meta');
+  var tabs=document.getElementById('tabs'), toast=document.getElementById('toast');
+
+  function trimTags(s){ return s.replace(/<[^>]+>/g,''); }
+
+  function render(){
+    var set = DATA[cur];
+    elMood.textContent = set.name;
+    elLine.innerHTML = set.items[idx];
+    elMeta.textContent = '第 ' + (idx+1) + ' / ' + set.items.length + ' 条 · 点下面换一条';
+    document.title = trimTags(set.items[idx]).slice(0,16) + ' · ligsa';
+  }
+
+  function pick(){
+    var n = DATA[cur].items.length;
+    if (n < 2) { idx = 0; return; }
+    if (idx !== lastIdx) lastIdx = idx;
+    var x = idx;
+    while (x === idx) { x = Math.floor(Math.random()*n); }
+    idx = x;
+    render();
+    bump();
+  }
+
+  function bump(){
+    elLine.style.transition='none'; elLine.style.opacity='0'; elLine.style.transform='translateY(8px) scale(.99)';
+    requestAnimationFrame(function(){
+      elLine.style.transition='opacity .28s ease, transform .28s ease';
+      elLine.style.opacity='1'; elLine.style.transform='none';
+    });
+  }
+
+  function say(t){
+    toast.textContent = t; toast.classList.add('on');
+    clearTimeout(say._t);
+    say._t = setTimeout(function(){ toast.classList.remove('on'); }, 1600);
+  }
+
+  tabs.addEventListener('click', function(e){
+    var b = e.target.closest('.tab');
+    if (!b) return;
+    [].forEach.call(tabs.querySelectorAll('.tab'), function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    cur = b.getAttribute('data-k');
+    idx = Math.floor(Math.random()*DATA[cur].items.length);
+    render(); bump();
+  });
+
+  document.getElementById('next').addEventListener('click', pick);
+
+  document.getElementById('copy').addEventListener('click', function(){
+    var txt = trimTags(DATA[cur].items[idx]);
+    var done = function(){ say('已复制，去粘贴吧'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done, function(){ fallbackCopy(txt, done); });
+    } else { fallbackCopy(txt, done); }
+  });
+
+  function fallbackCopy(txt, cb){
+    var ta=document.createElement('textarea');
+    ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); cb(); }catch(e){ say('复制失败，长按文字手动选'); }
+    document.body.removeChild(ta);
+  }
+
+  // ---- 出图 ----
+  var W=1080, H=1440;
+  function layout(ctx, text, maxW){
+    var chunks = text.match(/[A-Za-z0-9]+|[^\sA-Za-z0-9]|\s+/g) || [text];
+    var lines = [], line = '';
+    for (var i=0;i<chunks.length;i++){
+      var t = line + chunks[i];
+      if (ctx.measureText(t).width > maxW && line) { lines.push(line.trim()); line = chunks[i]; }
+      else { line = t; }
+    }
+    if (line.trim()) lines.push(line.trim());
+    return lines;
+  }
+
+  function makeImage(){
+    var txt = trimTags(DATA[cur].items[idx]);
+    var c = document.createElement('canvas'); c.width=W; c.height=H;
+    var x = c.getContext('2d');
+
+    var g = x.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,'#0a0d08'); g.addColorStop(.55,'#07080a'); g.addColorStop(1,'#071016');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+
+    var rg = x.createRadialGradient(W*0.5,-H*0.1,0,W*0.5,-H*0.1,W*0.9);
+    rg.addColorStop(0,'rgba(182,255,60,.16)'); rg.addColorStop(1,'rgba(182,255,60,0)');
+    x.fillStyle=rg; x.fillRect(0,0,W,H*0.7);
+
+    var pad = 96;
+    x.fillStyle='#b6ff3c'; x.font='700 34px "PingFang SC",sans-serif';
+    x.fillText('ligsa · 抽象语录', pad, 132);
+
+    x.fillStyle='rgba(34,211,238,.9)'; x.font='600 26px "PingFang SC",sans-serif';
+    x.fillText(DATA[cur].name, pad, 196);
+
+    x.fillStyle='#f2f4f8';
+    var size = txt.length <= 14 ? 96 : txt.length <= 22 ? 84 : txt.length <= 34 ? 72 : 62;
+    x.font = '800 ' + size + 'px "PingFang SC",sans-serif';
+    var lh = Math.round(size*1.62);
+    var lines = layout(x, txt, W-pad*2);
+    var startY = Math.round(H/2 - (lines.length*lh)/2 + size*0.62);
+    for (var i=0;i<lines.length;i++) x.fillText(lines[i], pad, startY + i*lh);
+
+    x.fillStyle='rgba(255,255,255,.16)';
+    x.fillRect(pad, H-190, W-pad*2, 2);
+
+    x.fillStyle='#7b8494'; x.font='400 28px "PingFang SC",sans-serif';
+    x.fillText('ligsa.work/yulu', pad, H-124);
+    x.textAlign='right';
+    x.fillText('NO.03', W-pad, H-124);
+    x.textAlign='left';
+
+    return c.toDataURL('image/png');
+  }
+
+  var shot=document.getElementById('shot'), shotImg=document.getElementById('shotImg');
+  var lastUrl='';
+  document.getElementById('save').addEventListener('click', function(){
+    lastUrl = makeImage();
+    shotImg.src = lastUrl;
+    shot.classList.add('on');
+  });
+  document.getElementById('closeShot').addEventListener('click', function(){ shot.classList.remove('on'); });
+  document.getElementById('dl').addEventListener('click', function(){
+    var a=document.createElement('a');
+    a.href = lastUrl || makeImage();
+    a.download = 'ligsa-yulu-' + Date.now() + '.png';
+    a.click();
+    say('已保存');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

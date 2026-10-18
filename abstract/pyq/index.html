@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>朋友圈文案急救 · ligsa</title>
+<meta name="description" content="不知道发什么的时候，摇一摇。一句话，直接复制发朋友圈。">
+<style>
+  :root{
+    --bg:#0d0806; --fg:#fff6ef; --dim:#8d7c72;
+    --acc:#ff8a3d; --acc2:#ff4f8b;
+    --line:rgba(255,255,255,.1);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,-apple-system,"Noto Sans SC",sans-serif;
+    display:flex;flex-direction:column;min-height:100%;
+    background-image:radial-gradient(110% 55% at 15% 0%,rgba(255,138,61,.16),transparent 62%),
+                     radial-gradient(90% 50% at 95% 105%,rgba(255,79,139,.14),transparent 62%);
+    background-attachment:fixed;overflow-x:hidden;
+  }
+  .app{width:100%;max-width:680px;margin:0 auto;padding:22px 22px calc(18px + env(safe-area-inset-bottom));
+       display:flex;flex-direction:column;min-height:100%;flex:1}
+  .top{display:flex;align-items:center;justify-content:space-between;font-size:13px;letter-spacing:.14em;color:var(--dim)}
+  .top b{color:var(--acc);font-weight:700}
+  .tabs{display:flex;gap:9px;overflow-x:auto;padding:18px 22px 6px;margin:0 -22px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none;padding:8px 15px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);
+       color:var(--dim);font-size:14px;cursor:pointer;transition:.18s;white-space:nowrap}
+  .tab.on{background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;color:#1a0d07;font-weight:800}
+  .stage{flex:1;display:flex;flex-direction:column;justify-content:center;padding:18px 2px 20px;text-align:center}
+  .scene{font-size:12px;letter-spacing:.24em;color:var(--acc);margin-bottom:20px}
+  .line{margin:0;font-size:clamp(26px,7vw,50px);line-height:1.66;font-weight:800;text-wrap:balance;word-break:break-word}
+  .line em{font-style:normal;background:linear-gradient(135deg,var(--acc),var(--acc2));
+           -webkit-background-clip:text;background-clip:text;color:transparent}
+  .shake{animation:sh .42s cubic-bezier(.36,.07,.19,.97) both}
+  @keyframes sh{
+    10%,90%{transform:translate3d(-2px,0,0)} 20%,80%{transform:translate3d(4px,0,0)}
+    30%,50%,70%{transform:translate3d(-7px,0,0)} 40%,60%{transform:translate3d(7px,0,0)}
+  }
+  .hint{margin-top:22px;font-size:13px;color:var(--dim);letter-spacing:.06em}
+  .bar{display:grid;grid-template-columns:1fr auto auto;gap:10px}
+  button{font:inherit;cursor:pointer;border:none;border-radius:14px;transition:.16s}
+  button:active{transform:scale(.97)}
+  .primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#1a0d07;font-weight:800;font-size:17px;
+           padding:16px 18px;letter-spacing:.04em;box-shadow:0 10px 30px rgba(255,110,80,.22)}
+  .ghost{background:rgba(255,255,255,.06);color:var(--fg);border:1px solid var(--line);font-size:15px;padding:16px 15px}
+  .foot{margin-top:16px;display:flex;justify-content:space-between;font-size:12px;color:#5a4a42;letter-spacing:.1em}
+  .toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,12px);background:rgba(28,16,12,.95);
+         color:var(--acc);border:1px solid rgba(255,138,61,.34);padding:11px 20px;border-radius:999px;font-size:14px;
+         opacity:0;pointer-events:none;transition:.24s;z-index:20}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .shot{position:fixed;inset:0;background:rgba(8,4,3,.95);display:none;flex-direction:column;align-items:center;
+        justify-content:center;gap:16px;padding:20px;z-index:30}
+  .shot.on{display:flex}
+  .shot img{max-width:100%;max-height:74vh;border-radius:14px;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+  .shot p{margin:0;font-size:14px;color:var(--dim);text-align:center;line-height:1.7}
+  .shot .row{display:flex;gap:10px}
+  .shot .row button{padding:13px 22px;font-size:15px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><span><b>ligsa</b> · 文案急救</span><span>NO.04</span></div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-k="food">晒吃</button>
+    <button class="tab" data-k="mood">心情</button>
+    <button class="tab" data-k="work">上班</button>
+    <button class="tab" data-k="week">周末</button>
+    <button class="tab" data-k="trip">出门</button>
+    <button class="tab" data-k="self">自拍</button>
+    <button class="tab" data-k="night">深夜</button>
+  </div>
+
+  <div class="stage">
+    <div class="scene" id="scene">晒吃</div>
+    <p class="line" id="line">这顿饭的意义是<em>让我有理由发这条</em>。</p>
+    <div class="hint" id="hint">摇一摇，或者点下面的按钮</div>
+  </div>
+
+  <div class="bar">
+    <button class="primary" id="shuffle">摇一摇</button>
+    <button class="ghost" id="copy">复制</button>
+    <button class="ghost" id="save">存图</button>
+  </div>
+
+  <div class="foot"><span>ligsa</span><span>ligsa.work/pyq</span></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="shot" id="shot">
+  <p>长按图片保存到相册<br>或者点下面按钮下载</p>
+  <img id="shotImg" alt="文案图">
+  <div class="row">
+    <button class="primary" id="dl">下载图片</button>
+    <button class="ghost" id="closeShot">关闭</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var DATA = {
+    food: { name:'晒吃', items:[
+      '这顿饭的意义是<em>让我有理由发这条</em>。',
+      '热量是今天的，<em>快乐是永久的</em>。',
+      '减脂第一天，<em>这是第 37 次第一天</em>。',
+      '好吃到沉默，<em>沉默到吃完</em>。',
+      '这家的分量，<em>刚好够我发一条</em>。',
+      '人生建议：<em>难过的时候吃点热的</em>。',
+      '我在吃饭，<em>顺便活着</em>。',
+      '账单很痛，<em>但我拍照很快</em>。',
+      '今天的我，<em>被这碗面哄好了</em>。',
+      '碳水是我的<em>情绪稳定剂</em>。'
+    ]},
+    mood: { name:'心情', items:[
+      '今天心情不错，<em>因为没发生什么</em>。',
+      '没事，<em>就是想发个状态</em>。',
+      '生活给了我一巴掌，<em>我说谢谢</em>。',
+      '我正在变好，<em>只是有点慢</em>。',
+      '情绪来了又走，<em>我负责站着</em>。',
+      '今天很普通，<em>普通得刚刚好</em>。',
+      '我不是不开心，<em>我是没表情</em>。',
+      '允许自己慢一点，<em>天不会塌</em>。',
+      '我在恢复，<em>请勿打扰</em>。',
+      '心里有事，<em>但今天先吃饭</em>。'
+    ]},
+    work: { name:'上班', items:[
+      '打工人今日打卡，<em>人还在，魂不在</em>。',
+      '上班如上坟，<em>下班如重生</em>。',
+      '我的班味，<em>已经浓得能腌咸菜了</em>。',
+      '今天也是<em>把热爱换成工资</em>的一天。',
+      '在工位上<em>安静地消耗自己</em>。',
+      '我不是在摸鱼，<em>我是在回血</em>。',
+      '周一的闹钟，<em>是全世界最准的</em>。',
+      '同事很好，<em>工作是顺便的</em>。',
+      '我的理想是<em>不上班也不穷</em>。',
+      '打卡成功，<em>今天的我到此为止</em>。'
+    ]},
+    week: { name:'周末', items:[
+      '周末的意义，<em>是把手机横过来</em>。',
+      '两天时间，<em>一天赖床，一天后悔</em>。',
+      '我的周末安排：<em>什么都不安排</em>。',
+      '出门是不可能的，<em>床不让</em>。',
+      '周末过得好快，<em>快得像没发生过</em>。',
+      '把时间还给自己，<em>哪怕只是躺着</em>。',
+      '今天的计划：<em>取消今天的计划</em>。',
+      '休息不是浪费，<em>是续命</em>。',
+      '周末的我，<em>是完整版的我</em>。',
+      '明天又周一了，<em>让我再躺五分钟</em>。'
+    ]},
+    trip: { name:'出门', items:[
+      '人挤人，<em>也是一种风景</em>。',
+      '出门不是为了看世界，<em>是为了不用回消息</em>。',
+      '到了一座新城市，<em>先找吃的</em>。',
+      '旅行治不好一切，<em>但能治好这周</em>。',
+      '路很长，<em>但我带了耳机</em>。',
+      '我把工作留在了原地，<em>它好像也没找我</em>。',
+      '风景很好，<em>就是腿有点废</em>。',
+      '换个地方发呆，<em>发呆也很专业</em>。',
+      '这趟值了，<em>下次不来了</em>。',
+      '出发的时候没想那么多，<em>回来的时候想了很多</em>。'
+    ]},
+    self: { name:'自拍', items:[
+      '今天这张能发，<em>明天可能就不行了</em>。',
+      '滤镜是我<em>最后的尊严</em>。',
+      '本人比照片<em>好一点点</em>。',
+      '角度找了三分钟，<em>修图三秒钟</em>。',
+      '我这张脸，<em>今天状态在线</em>。',
+      '拍照的意义，<em>是证明我来过</em>。',
+      '不美颜，<em>但也不服输</em>。',
+      '这张勉强，<em>但今天只有这张</em>。',
+      '我把快乐<em>存进了相册</em>。',
+      '今天气质不错，<em>明天再看吧</em>。'
+    ]},
+    night: { name:'深夜', items:[
+      '深夜的我和白天的我，<em>不是一个物种</em>。',
+      '凌晨两点，<em>全网都在装睡</em>。',
+      '这个时候还醒着的人，<em>心里都有点事</em>。',
+      '白天讲道理，<em>晚上讲情绪</em>。',
+      '我把今天翻了一遍，<em>没找到睡意的开关</em>。',
+      '夜很安静，<em>安静得有点吵</em>。',
+      '明天还要早起，<em>但我现在很清醒</em>。',
+      '该睡了，<em>但再刷五分钟</em>。',
+      '深夜的想法不要信，<em>但它们很真诚</em>。',
+      '睡吧，<em>明天的事明天再疯</em>。'
+    ]}
+  };
+
+  var cur='food', idx=0;
+  var elLine=document.getElementById('line'), elScene=document.getElementById('scene'), elHint=document.getElementById('hint');
+  var tabs=document.getElementById('tabs'), toast=document.getElementById('toast');
+  function trimTags(s){ return s.replace(/<[^>]+>/g,''); }
+
+  function render(){
+    elScene.textContent = DATA[cur].name;
+    elLine.innerHTML = DATA[cur].items[idx];
+    elHint.textContent = '第 ' + (idx+1) + ' / ' + DATA[cur].items.length + ' 条 · 摇一摇换一句';
+    document.title = trimTags(DATA[cur].items[idx]).slice(0,16) + ' · ligsa';
+  }
+
+  function pick(){
+    var n=DATA[cur].items.length, x=idx;
+    if (n<2) return;
+    while (x===idx) x = Math.floor(Math.random()*n);
+    idx = x; render();
+    elLine.classList.remove('shake');
+    void elLine.offsetWidth;
+    elLine.classList.add('shake');
+  }
+
+  function say(t){
+    toast.textContent=t; toast.classList.add('on');
+    clearTimeout(say._t); say._t=setTimeout(function(){ toast.classList.remove('on'); },1600);
+  }
+
+  tabs.addEventListener('click', function(e){
+    var b=e.target.closest('.tab'); if(!b) return;
+    [].forEach.call(tabs.querySelectorAll('.tab'), function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    cur=b.getAttribute('data-k');
+    idx=Math.floor(Math.random()*DATA[cur].items.length);
+    render(); pick();
+  });
+
+  document.getElementById('shuffle').addEventListener('click', pick);
+
+  document.getElementById('copy').addEventListener('click', function(){
+    var txt=trimTags(DATA[cur].items[idx]);
+    var done=function(){ say('已复制，去朋友圈粘贴'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done, function(){ fallback(txt,done); });
+    } else fallback(txt,done);
+  });
+  function fallback(txt, cb){
+    var ta=document.createElement('textarea'); ta.value=txt;
+    ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); cb(); }catch(e){ say('复制失败，长按文字手动选'); }
+    document.body.removeChild(ta);
+  }
+
+  var W=1080,H=1440;
+  function makeImage(){
+    var txt=trimTags(DATA[cur].items[idx]);
+    var c=document.createElement('canvas'); c.width=W; c.height=H;
+    var x=c.getContext('2d');
+    var g=x.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,'#140a07'); g.addColorStop(.5,'#0d0806'); g.addColorStop(1,'#160910');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+    var rg=x.createRadialGradient(W*.2,0,0,W*.2,0,W);
+    rg.addColorStop(0,'rgba(255,138,61,.20)'); rg.addColorStop(1,'rgba(255,138,61,0)');
+    x.fillStyle=rg; x.fillRect(0,0,W,H*.8);
+
+    var pad=96;
+    x.fillStyle='#ff8a3d'; x.font='700 34px "PingFang SC",sans-serif';
+    x.fillText('ligsa · 文案急救', pad, 132);
+    x.fillStyle='rgba(255,79,139,.92)'; x.font='600 26px "PingFang SC",sans-serif';
+    x.fillText(DATA[cur].name, pad, 196);
+
+    x.fillStyle='#fff6ef';
+    var size = txt.length<=14?96: txt.length<=22?84: txt.length<=34?72:62;
+    x.font='800 '+size+'px "PingFang SC",sans-serif';
+    var lh=Math.round(size*1.66);
+    var chunks = txt.match(/[A-Za-z0-9]+|[^\sA-Za-z0-9]|\s+/g) || [txt];
+    var lines=[], line='';
+    for (var i=0;i<chunks.length;i++){
+      var t=line+chunks[i];
+      if (x.measureText(t).width>W-pad*2 && line){ lines.push(line.trim()); line=chunks[i]; }
+      else line=t;
+    }
+    if (line.trim()) lines.push(line.trim());
+    var y=Math.round(H/2-(lines.length*lh)/2+size*0.64);
+    for (var j=0;j<lines.length;j++) x.fillText(lines[j], pad, y + j*lh);
+
+    x.fillStyle='rgba(255,255,255,.16)'; x.fillRect(pad,H-190,W-pad*2,2);
+    x.fillStyle='#8d7c72'; x.font='400 28px "PingFang SC",sans-serif';
+    x.fillText('ligsa.work/pyq', pad, H-124);
+    x.textAlign='right'; x.fillText('NO.04', W-pad, H-124); x.textAlign='left';
+    return c.toDataURL('image/png');
+  }
+
+  var shot=document.getElementById('shot'), shotImg=document.getElementById('shotImg'), lastUrl='';
+  document.getElementById('save').addEventListener('click', function(){
+    lastUrl=makeImage(); shotImg.src=lastUrl; shot.classList.add('on');
+  });
+  document.getElementById('closeShot').addEventListener('click', function(){ shot.classList.remove('on'); });
+  document.getElementById('dl').addEventListener('click', function(){
+    var a=document.createElement('a');
+    a.href=lastUrl||makeImage();
+    a.download='ligsa-pyq-'+Date.now()+'.png';
+    a.click(); say('已保存');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
