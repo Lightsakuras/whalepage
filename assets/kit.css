@@ -392,3 +392,11 @@ section { padding-block: var(--section); position: relative; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .js .reveal { opacity: 1; transform: none; }
 }
+
+/* ---------- 静态快照模式：?static 时禁用入场动画（截图 / 打印 / 爬虫快照用） ---------- */
+html.no-reveal .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+html.no-reveal .marquee-track { animation: none !important; }
+@media print {
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .site-header { position: static !important; }
+}

@@ -109,3 +109,8 @@
     el.textContent = new Date().getFullYear();
   });
 })();
+
+/* 静态快照模式：?static 让所有入场动画直接到位，方便截图/打印/预渲染 */
+if (new URLSearchParams(location.search).has('static')) {
+  document.documentElement.classList.add('no-reveal');
+}
