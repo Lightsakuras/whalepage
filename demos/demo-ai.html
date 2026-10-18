@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="ai">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aria — 把一百篇论文读成一段话</title>
+<meta name="description" content="Aria 是面向研究者的 AI 阅读助手：上传、追问、成稿。">
+<meta name="theme-color" content="#07080c">
+<link rel="stylesheet" href="../assets/kit.css">
+</head>
+<body class="grain spotlight">
+
+<header class="site-header">
+  <div class="wrap">
+    <nav class="nav">
+      <a class="logo" href="demo-ai.html"><span class="logo-mark">A</span>Aria</a>
+      <div class="nav-links">
+        <a href="#features">能力</a>
+        <a href="#workflow">怎么用</a>
+        <a href="#pricing">价格</a>
+        <a href="../index.html">← 返回</a>
+      </div>
+      <div class="nav-cta">
+        <a class="btn btn-ghost" href="#pricing">登录</a>
+        <a class="btn btn-primary" href="#start">免费试用</a>
+      </div>
+      <button class="menu-btn" aria-label="打开菜单" aria-expanded="false"><span></span><span></span><span></span></button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero glow-top">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow reveal">研究助手 · v2 已上线</span>
+      <h1 class="display reveal">把一百篇论文<br>读成<span class="grad-text">一段话</span></h1>
+      <p class="lead reveal">Aria 读你上传的 PDF，记住每一处引用，然后回答你的问题 —— 附页码。它不猜，找不到出处就说找不到。</p>
+      <div class="hero-actions reveal">
+        <a class="btn btn-primary btn-lg" href="#start">免费读 20 篇</a>
+        <a class="btn btn-ghost btn-lg" href="#workflow">看它怎么工作</a>
+      </div>
+      <div class="hero-note reveal"><span>无需信用卡</span><span>中文 / 英文</span><span>引用可点回原文</span></div>
+    </div>
+    <div class="hero-art reveal">
+      <div class="stack">
+        <div class="stack-card"><div class="stack-inner">
+          <div class="mock-row w-45"></div>
+          <div class="mock-chip"></div>
+          <div class="mock-row w-88"></div>
+          <div class="mock-row w-70"></div>
+          <div class="mock-block"></div>
+        </div></div>
+        <div class="stack-card"><div class="stack-inner">
+          <div class="mock-row w-70"></div>
+          <div class="mock-grid"><div class="mock-block"></div><div class="mock-block"></div></div>
+          <div class="mock-row w-45"></div>
+        </div></div>
+        <div class="stack-card"><div class="stack-inner">
+          <div class="mock-chip"></div>
+          <div class="mock-row w-88"></div>
+          <div class="mock-row w-45"></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span class="marquee-item">arXiv</span><span class="marquee-item">PubMed</span>
+    <span class="marquee-item">Semantic Scholar</span><span class="marquee-item">Zotero</span>
+    <span class="marquee-item">PDF</span><span class="marquee-item">LaTeX</span>
+    <span class="marquee-item">arXiv</span><span class="marquee-item">PubMed</span>
+    <span class="marquee-item">Semantic Scholar</span><span class="marquee-item">Zotero</span>
+    <span class="marquee-item">PDF</span><span class="marquee-item">LaTeX</span>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div style="display:grid;gap:18px;margin-bottom:clamp(28px,4vw,48px);max-width:640px">
+      <span class="eyebrow reveal">能力</span>
+      <h2 class="h2 reveal">不是聊天框套个壳</h2>
+      <p class="lead reveal">读文献最难的不是读，是记住哪句话出自哪一篇。Aria 先解决这件事。</p>
+    </div>
+
+    <div class="bento">
+      <div class="card card-solid b-span-2 b-row-2 b-feature reveal">
+        <div>
+          <span class="badge">核心</span>
+          <h3 class="h2" style="margin-top:16px;font-size:clamp(1.4rem,2.6vw,2rem)">每一句回答<br>都带页码</h3>
+        </div>
+        <p style="color:var(--fg-muted);font-size:.95rem">点引用直接跳到 PDF 那一页、高亮那一段。写文献综述时不用再翻回去找原文。</p>
+      </div>
+      <div class="card b-span-2 reveal">
+        <div class="card-icon">◱</div>
+        <h3 class="h3">整库提问</h3>
+        <p>一次拖进 50 篇，问「这些论文对 X 的结论有分歧吗」，它按观点分组并标出来源。</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon">✳</div>
+        <h3 class="h3">术语解释</h3>
+        <p>选中一个词，就地给三层解释：一句话、一段话、带公式的严格版。</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon">↧</div>
+        <h3 class="h3">导出</h3>
+        <p>笔记导出 Markdown / BibTeX / Word，引用格式自动排好。</p>
+      </div>
+      <div class="card b-span-2 reveal">
+        <div class="card-icon">◷</div>
+        <h3 class="h3">不训练的承诺</h3>
+        <p>你上传的论文不进任何训练集。企业版可选私有部署，数据不出你自己的机器。</p>
+      </div>
+      <div class="card b-span-2 reveal">
+        <div class="card-icon">⚑</div>
+        <h3 class="h3">找不到了就说找不到</h3>
+        <p>模型对没有依据的问题会明确标注「文献中未提及」，而不是编一个像样的答案。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap">
+    <div class="stats">
+      <div class="reveal"><div class="stat-value"><span data-count="48">0</span><small style="font-size:.4em;color:var(--fg-muted)">k</small></div><div class="stat-label">已读论文数</div></div>
+      <div class="reveal"><div class="stat-value"><span data-count="96">0</span><small style="font-size:.4em;color:var(--fg-muted)">%</small></div><div class="stat-label">引用定位准确率</div></div>
+      <div class="reveal"><div class="stat-value"><span data-count="3.2" data-suffix="s">0</span></div><div class="stat-label">百页 PDF 首次索引</div></div>
+      <div class="reveal"><div class="stat-value"><span data-count="1200">0</span><small style="font-size:.4em;color:var(--fg-muted)">+</small></div><div class="stat-label">研究者在用</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="workflow">
+  <div class="wrap narrow">
+    <div style="display:grid;gap:18px;margin-bottom:clamp(24px,4vw,40px)">
+      <span class="eyebrow reveal">怎么用</span>
+      <h2 class="h2 reveal">三步，没有第四步</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="step-body">
+        <h3 class="h3">拖进来</h3>
+        <p>PDF、arXiv 链接、Zotero 收藏夹都行。一份文档一份索引，重复上传不会重复计费。</p>
+      </div></div>
+      <div class="step reveal"><div class="step-body">
+        <h3 class="h3">问它</h3>
+        <p>用中文问也行，它会拿英文原文回答再译。想只看某一篇，把其他篇取消勾选就行。</p>
+      </div></div>
+      <div class="step reveal"><div class="step-body">
+        <h3 class="h3">拿走</h3>
+        <p>成稿导出到你正在写的地方。它不会替你把综述写完，但能省掉翻回去找原文的两小时。</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div style="display:grid;gap:18px;margin-bottom:clamp(28px,4vw,48px);max-width:620px">
+      <span class="eyebrow reveal">价格</span>
+      <h2 class="h2 reveal">按论文数，不按 token</h2>
+      <p class="lead reveal">不玩字数换算。你上传多少篇、问多少问题，价格就是这一张表。</p>
+    </div>
+    <div class="pricing">
+      <div class="plan reveal">
+        <div><div class="plan-name">免费</div><p class="small" style="margin-top:6px">先试一个月</p></div>
+        <div class="plan-price">¥0</div>
+        <ul class="plan-list"><li>20 篇论文</li><li>每天 30 次提问</li><li>引用跳转</li><li>社区支持</li></ul>
+        <a class="btn btn-ghost" href="#start">开始用</a>
+      </div>
+      <div class="plan featured reveal">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:12px">
+          <div><div class="plan-name">研究版</div><p class="small" style="margin-top:6px">一个人读一整个领域</p></div>
+          <span class="badge">年付省 30%</span>
+        </div>
+        <div class="plan-price">¥39<small> / 月</small></div>
+        <ul class="plan-list"><li>无限篇数</li><li>无限提问</li><li>整库对比</li><li>Markdown / BibTeX 导出</li><li>优先排队</li></ul>
+        <a class="btn btn-primary" href="#start">升级</a>
+      </div>
+      <div class="plan reveal">
+        <div><div class="plan-name">团队</div><p class="small" style="margin-top:6px">3 人以上</p></div>
+        <div class="plan-price">¥129<small> / 席位</small></div>
+        <ul class="plan-list"><li>共享文献库</li><li>私有部署选项</li><li>数据不离开你的服务器</li><li>发票与对公</li></ul>
+        <a class="btn btn-ghost" href="#start">联系我们</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap">
+    <div class="grid g-2">
+      <div class="card card-solid quote reveal">
+        <p>“写综述那章，以前要花三天翻回去核对页码。现在它直接给我出处，我只负责判断哪些值得写进去。”</p>
+        <div class="quote-by"><span class="avatar"></span><span>计算机在读博士 · 三年级</span></div>
+      </div>
+      <div class="card card-solid quote reveal">
+        <p>“最打动我的是它说『这篇里没有』。别的工具都会硬编一段出来。”</p>
+        <div class="quote-by"><span class="avatar"></span><span>生物信息 · 博后</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="section-tight">
+  <div class="wrap narrow">
+    <div style="display:grid;gap:18px;margin-bottom:24px">
+      <span class="eyebrow reveal">常见问题</span>
+      <h2 class="h2 reveal">还有这些顾虑</h2>
+    </div>
+    <div class="faq">
+      <details class="reveal"><summary>我的论文会被拿去训练吗？</summary><div class="faq-body">不会。上传内容只在你自己的索引里，不进入训练集，也不会被任何其他账号检索到。团队版可以完全部署在你自己的机器上。</div></details>
+      <details class="reveal"><summary>支持中文论文吗？</summary><div class="faq-body">支持。中文论文的引用定位同样可用，中英混排的库也能整库提问。</div></details>
+      <details class="reveal"><summary>能读扫描版 PDF 吗？</summary><div class="faq-body">能，会先做 OCR。扫描件的定位精度会低于原生 PDF，界面上会用虚线标注，提醒你自行核对一次。</div></details>
+      <details class="reveal"><summary>免费版到期会扣钱吗？</summary><div class="faq-body">不会。免费版没有绑定支付方式，到期后自动降级为只读，不会产生任何费用。</div></details>
+    </div>
+  </div>
+</section>
+
+<section id="start" class="section-tight">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <span class="eyebrow">开始</span>
+      <h2 class="h2">今天先读三篇试试</h2>
+      <p class="lead" style="text-align:center">不用信用卡、不用填公司信息。上传一篇你现在手上正读的论文，问它一个问题。</p>
+      <div class="hero-actions" style="justify-content:center">
+        <a class="btn btn-primary btn-lg" href="#start">免费开始</a>
+        <a class="btn btn-ghost btn-lg" href="#pricing">对比价格</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <a class="logo" href="demo-ai.html" style="margin-bottom:14px"><span class="logo-mark">A</span>Aria</a>
+        <p class="small" style="max-width:32ch">给研究者的阅读助手。有出处的答案，才叫答案。</p>
+      </div>
+      <div class="footer-col"><h4>产品</h4><a href="#features">能力</a><a href="#workflow">怎么用</a><a href="#pricing">价格</a></div>
+      <div class="footer-col"><h4>资源</h4><a href="#faq">常见问题</a><a href="#start">开始使用</a><a href="../index.html">案例说明</a></div>
+      <div class="footer-col"><h4>其他案例</h4><a href="demo-studio.html">设计工作室</a><a href="demo-shop.html">实体品牌</a><a href="../index.html">返回销售页</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> Aria · 示例站点（WhalePage Kit 案例）</span>
+      <span>纯静态演示 · 无真实服务</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/kit.js"></script>
+</body>
+</html>

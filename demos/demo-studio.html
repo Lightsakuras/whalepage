@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="studio">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纸鸢设计 — 让品牌看起来像它自己</title>
+<meta name="description" content="纸鸢设计工作室：品牌识别、包装、网站。八个项目，七个行业，一个原则。">
+<meta name="theme-color" content="#f6f3ee">
+<link rel="stylesheet" href="../assets/kit.css">
+<style>
+  /* studio 风格专属：作品列表用纯排版 */
+  .work-list { border-top: 1px solid var(--line); }
+  .work-row {
+    display: grid; grid-template-columns: 1fr 2.2fr auto; gap: clamp(16px, 3vw, 40px);
+    align-items: baseline; padding-block: clamp(20px, 3vw, 32px);
+    border-bottom: 1px solid var(--line); transition: padding-left .35s ease, background .35s;
+  }
+  .work-row:hover { padding-left: 14px; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%); }
+  .work-row .w-year { font-family: var(--font-mono); font-size: .78rem; color: var(--fg-muted); letter-spacing: .08em; }
+  .work-row .w-title { font-family: var(--font-display); font-size: clamp(1.3rem, 2.6vw, 2rem); line-height: 1.15; letter-spacing: -.02em; }
+  .work-row .w-tags { font-size: .8rem; color: var(--fg-muted); margin-top: 6px; }
+  .work-row .w-arrow { font-size: 1.1rem; color: var(--accent); opacity: 0; transform: translateX(-6px); transition: opacity .3s, transform .3s; }
+  .work-row:hover .w-arrow { opacity: 1; transform: none; }
+
+  .plate {
+    position: relative; border: 1px solid var(--line); background: var(--surface-solid);
+    aspect-ratio: 3 / 2; display: grid; place-items: center; overflow: hidden;
+  }
+  .plate::before {
+    content: ""; position: absolute; inset: 12px; border: 1px solid var(--line);
+  }
+  .plate-mark {
+    font-family: var(--font-display); font-size: clamp(2.4rem, 7vw, 5rem);
+    letter-spacing: -.04em; line-height: 1;
+  }
+  .about-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(28px, 5vw, 64px); align-items: start; }
+  @media (max-width: 860px) {
+    .work-row { grid-template-columns: auto 1fr; }
+    .work-row .w-arrow { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <nav class="nav">
+      <a class="logo" href="demo-studio.html"><span class="logo-mark">K</span>纸鸢设计</a>
+      <div class="nav-links">
+        <a href="#work">项目</a>
+        <a href="#services">服务</a>
+        <a href="#about">关于</a>
+        <a href="../index.html">← 返回</a>
+      </div>
+      <div class="nav-cta">
+        <a class="btn btn-primary" href="#contact">聊聊</a>
+      </div>
+      <button class="menu-btn" aria-label="打开菜单" aria-expanded="false"><span></span><span></span><span></span></button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div style="display:grid;gap:clamp(22px,3vw,32px);max-width:960px">
+      <span class="eyebrow reveal">品牌识别 · 包装 · 网站 ／ 杭州</span>
+      <h1 class="display reveal">让品牌<br>看起来像它<span class="grad-text">自己</span></h1>
+      <p class="lead reveal">大部分品牌失败不是因为不好看，是因为看完了记不住它是谁。我们先弄清楚你是谁，然后只做这一件事。</p>
+      <div class="hero-actions reveal">
+        <a class="btn btn-primary btn-lg" href="#contact">说说你的项目</a>
+        <a class="btn btn-ghost btn-lg" href="#work">先看做了什么</a>
+      </div>
+      <div class="hero-note reveal">
+        <span>2018 年成立</span>
+        <span>一年最多 8 个项目</span>
+        <span>现在排到两个月后</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap">
+    <div class="grid g-2">
+      <div class="plate reveal"><div class="plate-mark">纸鸢</div></div>
+      <div class="grid" style="gap:clamp(14px,2vw,22px)">
+        <div class="card card-solid reveal">
+          <div class="card-num">工作室</div>
+          <h3 class="h3" style="margin-top:10px">三个人，八年</h3>
+          <p>一个做策略，一个做视觉，一个做落地。我们不外包，接的项目一年不超过八个。</p>
+        </div>
+        <div class="card card-solid reveal">
+          <div class="card-num">原则</div>
+          <h3 class="h3" style="margin-top:10px">先想清楚，再动手</h3>
+          <p>第一轮不出稿，只出判断。你可能会听到「这个方向建议放弃」——这正是你付钱买的东西。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(24px,4vw,40px)">
+      <div style="display:grid;gap:14px">
+        <span class="eyebrow reveal">近期项目</span>
+        <h2 class="h2 reveal">八个项目，七个行业</h2>
+      </div>
+      <p class="small reveal" style="max-width:30ch">客户名字按保密协议略去行业细节。</p>
+    </div>
+
+    <div class="work-list">
+      <div class="work-row reveal">
+        <span class="w-year">2026</span>
+        <div><div class="w-title">一亩</div><div class="w-tags">茶饮 · 品牌识别 / 包装 / 门店</div></div>
+        <span class="w-arrow">→</span>
+      </div>
+      <div class="work-row reveal">
+        <span class="w-year">2026</span>
+        <div><div class="w-title">苔</div><div class="w-tags">香氛 · 视觉系统 / 电商详情</div></div>
+        <span class="w-arrow">→</span>
+      </div>
+      <div class="work-row reveal">
+        <span class="w-year">2025</span>
+        <div><div class="w-title">北仓</div><div class="w-tags">独立书店 · 空间导视 / 网站</div></div>
+        <span class="w-arrow">→</span>
+      </div>
+      <div class="work-row reveal">
+        <span class="w-year">2025</span>
+        <div><div class="w-title">江记</div><div class="w-tags">食品 · 包装 / 电商主图</div></div>
+        <span class="w-arrow">→</span>
+      </div>
+      <div class="work-row reveal">
+        <span class="w-year">2025</span>
+        <div><div class="w-title">破晓</div><div class="w-tags">咖啡烘焙 · 品牌 / 门店 / 物料</div></div>
+        <span class="w-arrow">→</span>
+      </div>
+      <div class="work-row reveal">
+        <span class="w-year">2024</span>
+        <div><div class="w-title">小满</div><div class="w-tags">母婴 · 品牌识别</div></div>
+        <span class="w-arrow">→</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap narrow">
+    <div style="display:grid;gap:18px;margin-bottom:clamp(24px,4vw,40px)">
+      <span class="eyebrow reveal">服务</span>
+      <h2 class="h2 reveal">三件事，一件比一件长</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="step-body">
+        <h3 class="h3">品牌识别 · 4–6 周</h3>
+        <p>定位、命名、标志、字体、色彩、辅助图形、基础应用。交付一本可以发给任何供应商的规范。</p>
+      </div></div>
+      <div class="step reveal"><div class="step-body">
+        <h3 class="h3">包装 · 6–10 周</h3>
+        <p>从结构沟通到印前文件。我们盯到打样，不把文件甩给印刷厂就消失。</p>
+      </div></div>
+      <div class="step reveal"><div class="step-body">
+        <h3 class="h3">网站 · 3–5 周</h3>
+        <p>自己写前端。做完你能自己改文案，不会每个月找我们改一行字。</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="section-tight">
+  <div class="wrap">
+    <div class="about-grid">
+      <div style="display:grid;gap:18px">
+        <span class="eyebrow reveal">关于</span>
+        <h2 class="h2 reveal">我们不做的项目<br>比做的多</h2>
+        <p class="lead reveal">不接需要「先出三个方案看看」的活，不接要求「快要大牌的感觉」的活，不接三个月内要改三遍方向的活。不是清高，是这些项目最后双方都不好过。</p>
+      </div>
+      <div class="grid" style="gap:clamp(14px,2vw,22px)">
+        <div class="card card-solid reveal">
+          <div class="card-num">合作方式</div>
+          <h3 class="h3" style="margin-top:10px">四成定金</h3>
+          <p>开工前付 40%，方向确认付 40%，交付付 20%。中途叫停按已完成阶段结算。</p>
+        </div>
+        <div class="card card-solid reveal">
+          <div class="card-num">周期</div>
+          <h3 class="h3" style="margin-top:10px">一年不超过八个</h3>
+          <p>现在排到两个月后。如果你时间紧，我会直接告诉你排不上，不占你位置。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap">
+    <div class="grid g-2">
+      <div class="card card-solid quote reveal">
+        <p>“他们第一轮把我们的三个方向砍掉了两个，理由是『这三个其实是一个，只是换了个说法』。那一句话值回票价。”</p>
+        <div class="quote-by"><span class="avatar"></span><span>茶饮品牌创始人</span></div>
+      </div>
+      <div class="card card-solid quote reveal">
+        <p>“网站交给我之后我自己改过七八次文案，一次没找过他们。这在我以前找的公司里是不可能的。”</p>
+        <div class="quote-by"><span class="avatar"></span><span>独立书店主理人</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="section-tight">
+  <div class="wrap">
+    <div class="card card-solid reveal" style="padding:clamp(30px,5vw,60px)">
+      <div style="display:grid;gap:20px;max-width:620px">
+        <span class="eyebrow">联系</span>
+        <h2 class="h2">先说清楚你在做什么</h2>
+        <p class="lead">发一段话给我，说产品是什么、卖给谁、卡在哪。我会在两天内回你：能做、不能做，或者建议你先把什么想清楚。</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="mailto:hi@paperkite.studio">发邮件</a>
+          <a class="btn btn-ghost btn-lg" href="#work">再看一遍项目</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <a class="logo" href="demo-studio.html" style="margin-bottom:14px"><span class="logo-mark">K</span>纸鸢设计</a>
+        <p class="small" style="max-width:34ch">杭州 · 品牌识别 / 包装 / 网站。先弄清楚你是谁，然后只做这一件事。</p>
+      </div>
+      <div class="footer-col"><h4>工作室</h4><a href="#about">关于</a><a href="#services">服务</a><a href="#work">项目</a></div>
+      <div class="footer-col"><h4>联系</h4><a href="#contact">项目咨询</a><a href="mailto:hi@paperkite.studio">邮件</a></div>
+      <div class="footer-col"><h4>其他案例</h4><a href="demo-ai.html">AI 产品</a><a href="demo-shop.html">实体品牌</a><a href="../index.html">返回销售页</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> 纸鸢设计 · 示例站点（WhalePage Kit 案例）</span>
+      <span>纯静态演示 · 无真实服务</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/kit.js"></script>
+</body>
+</html>

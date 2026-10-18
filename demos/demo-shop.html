@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="shop">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOCTURNE 01 — 为夜里工作的人做的一只音箱</title>
+<meta name="description" content="NOCTURNE 01：限量 500 台。低音量下的低频补偿，给深夜工作室用的小尺寸监听音箱。">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="stylesheet" href="../assets/kit.css">
+<style>
+  /* shop 风格专属：产品本体用纯 CSS 画，不依赖图片 */
+  .product-stage {
+    position: relative; aspect-ratio: 1 / 1; display: grid; place-items: center;
+    background:
+      radial-gradient(60% 50% at 50% 22%, rgba(215, 255, 62, .16), transparent 70%),
+      radial-gradient(90% 80% at 50% 120%, rgba(255, 255, 255, .06), transparent 70%);
+  }
+  .speaker {
+    position: relative; width: min(78%, 380px); aspect-ratio: 1 / 1.12;
+    border-radius: 26px;
+    background: linear-gradient(160deg, #242424 0%, #131313 46%, #0d0d0d 100%);
+    border: 1px solid rgba(255, 255, 255, .16);
+    box-shadow: 0 50px 90px -40px rgba(0, 0, 0, .95), inset 0 1px 0 rgba(255, 255, 255, .14);
+    display: grid; place-items: center; gap: 14px; padding: 12%;
+    transform: rotate(-4deg);
+  }
+  .speaker::after {
+    content: ""; position: absolute; inset: 8%; border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, .07);
+  }
+  .driver {
+    width: 58%; aspect-ratio: 1; border-radius: 50%;
+    background:
+      radial-gradient(circle at 36% 30%, rgba(255, 255, 255, .3), transparent 46%),
+      radial-gradient(circle at 50% 50%, #1b1b1b 0%, #080808 68%, #000 100%);
+    border: 1px solid rgba(255, 255, 255, .13);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, .9);
+  }
+  .speaker-bar { width: 34%; height: 4px; border-radius: 99px; background: var(--accent); opacity: .85; }
+  .stage-tag {
+    position: absolute; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .22em;
+    color: var(--fg-muted); text-transform: uppercase;
+  }
+  .stage-tag.tl { top: 18px; left: 4px; }
+  .stage-tag.br { bottom: 18px; right: 4px; }
+
+  .spec-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .spec-strip > div { background: var(--bg); padding: clamp(18px, 2.6vw, 28px); }
+  .spec-k { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--fg-muted); }
+  .spec-v { font-family: var(--font-display); font-size: clamp(1.15rem, 2vw, 1.5rem); font-weight: 700; letter-spacing: -.02em; margin-top: 8px; }
+  .spec-v small { font-size: .55em; color: var(--fg-muted); font-weight: 500; letter-spacing: 0; }
+
+  .num-tag { font-family: var(--font-mono); font-size: .74rem; letter-spacing: .16em; color: var(--accent); }
+  @media (max-width: 860px) { .spec-strip { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body class="grain">
+
+<header class="site-header">
+  <div class="wrap">
+    <nav class="nav">
+      <a class="logo" href="demo-shop.html"><span class="logo-mark">N</span>NOCTURNE</a>
+      <div class="nav-links">
+        <a href="#spec">规格</a>
+        <a href="#detail">细节</a>
+        <a href="#faq">发货</a>
+        <a href="../index.html">← 返回</a>
+      </div>
+      <div class="nav-cta">
+        <a class="btn btn-primary" href="#order">预订 500 台</a>
+      </div>
+      <button class="menu-btn" aria-label="打开菜单" aria-expanded="false"><span></span><span></span><span></span></button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow reveal">限量 500 台 / 编号发售</span>
+      <h1 class="display reveal">为夜里工作的人<br>做的<span class="grad-text">一只音箱</span></h1>
+      <p class="lead reveal">小音量时人耳会丢掉低频，所以深夜听歌总觉得「薄」。NOCTURNE 01 在 40dB 以下做了一整套低频补偿曲线 —— 不吵到隔壁，也不委屈耳朵。</p>
+      <div class="hero-actions reveal">
+        <a class="btn btn-primary btn-lg" href="#order">预订 · ¥1,280</a>
+        <a class="btn btn-ghost btn-lg" href="#spec">看规格</a>
+      </div>
+      <div class="hero-note reveal"><span>500 台编号</span><span>2026 年 11 月发货</span><span>七天无理由</span></div>
+    </div>
+    <div class="hero-art reveal">
+      <div class="product-stage">
+        <span class="stage-tag tl">NOCTURNE / 01</span>
+        <span class="stage-tag br">DESIGNED FOR 3AM</span>
+        <div class="speaker" aria-hidden="true">
+          <div class="driver"></div>
+          <div class="speaker-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span class="marquee-item">低频补偿</span><span class="marquee-item">USB-C 供电</span>
+    <span class="marquee-item">3.5mm 与蓝牙双模</span><span class="marquee-item">铝合金箱体</span>
+    <span class="marquee-item">深夜模式</span>
+    <span class="marquee-item">低频补偿</span><span class="marquee-item">USB-C 供电</span>
+    <span class="marquee-item">3.5mm 与蓝牙双模</span><span class="marquee-item">铝合金箱体</span>
+    <span class="marquee-item">深夜模式</span>
+  </div>
+</div>
+
+<section id="spec" class="section-tight">
+  <div class="wrap">
+    <div class="spec-strip reveal">
+      <div><div class="spec-k">单元</div><div class="spec-v">2 × 3"<small> 全频</small></div></div>
+      <div><div class="spec-k">频响</div><div class="spec-v">52Hz–20kHz</div></div>
+      <div><div class="spec-k">输出</div><div class="spec-v">2 × 12W</div></div>
+      <div><div class="spec-k">重量</div><div class="spec-v">1.9<small> kg</small></div></div>
+    </div>
+    <p class="small reveal" style="margin-top:16px;max-width:70ch">以上为工程样机实测值，批量机允许 ±3dB 偏差。我们不做「实验室最佳值」这种数字游戏，实测曲线会随机器一起寄给你。</p>
+  </div>
+</section>
+
+<section id="detail">
+  <div class="wrap">
+    <div class="grid g-2" style="align-items:center;gap:clamp(28px,5vw,64px)">
+      <div style="display:grid;gap:18px">
+        <span class="num-tag reveal">01 / 低频补偿</span>
+        <h2 class="h2 reveal">在 40dB 时，<br>它知道你的耳朵丢了什么</h2>
+        <p class="lead reveal">等响曲线告诉我们：音量每降 10dB，人耳对低频的敏感度下降得比中频快得多。NOCTURNE 01 会跟着音量自动抬一条补偿曲线，深夜小音量时也听得到鼓的形体。</p>
+        <ul class="plan-list reveal" style="font-size:.95rem">
+          <li>三档补偿曲线，面板一颗旋钮切换</li>
+          <li>补偿只在 40dB 以下生效，白天不染色</li>
+          <li>可以关掉，纯监听模式</li>
+        </ul>
+      </div>
+      <div class="card card-solid reveal" style="display:grid;gap:14px;padding:clamp(24px,3.4vw,38px)">
+        <span class="num-tag">02 / 安静的机器</span>
+        <h3 class="h3">没有指示灯会亮</h3>
+        <p>整机只有一颗电源灯，默认关闭。深夜工作室里最亮的那个点，不应该是一台音箱。</p>
+        <div class="mock-grid" style="margin-top:8px">
+          <div class="mock-block"></div><div class="mock-block"></div>
+          <div class="mock-block"></div><div class="mock-block"></div>
+        </div>
+        <p class="small" style="margin-top:6px">上面这块是占位图区，正式版会放实拍。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="wrap">
+    <div class="stats">
+      <div class="reveal"><div class="stat-value"><span data-count="500">0</span></div><div class="stat-label">总产量（编号发售）</div></div>
+      <div class="reveal"><div class="stat-value"><span data-count="40" data-suffix="dB">0</span></div><div class="stat-label">补偿曲线生效阈值</div></div>
+      <div class="reveal"><div class="stat-value"><span data-count="52" data-suffix="Hz">0</span></div><div class="stat-label">低频下限</div></div>
+      <div class="reveal"><div class="stat-value"><span data-count="0">0</span></div><div class="stat-label">颗会亮的指示灯</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="order">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <span class="eyebrow">预订</span>
+      <h2 class="h2">¥1,280 · 编号 001–500</h2>
+      <p class="lead" style="text-align:center">下单时选编号，先到先选。发不出货全额退款，我们不做预售跑路这一套。</p>
+      <div class="hero-actions" style="justify-content:center">
+        <a class="btn btn-primary btn-lg" href="#order">现在预订</a>
+        <a class="btn btn-ghost btn-lg" href="#faq">发货与退换</a>
+      </div>
+      <p class="small">首批预计 2026 年 11 月中旬发出 · 顺丰包邮</p>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="section-tight">
+  <div class="wrap narrow">
+    <div style="display:grid;gap:18px;margin-bottom:24px">
+      <span class="eyebrow reveal">发货与退换</span>
+      <h2 class="h2 reveal">说清楚，省得后面吵</h2>
+    </div>
+    <div class="faq">
+      <details class="reveal"><summary>什么时候发货？</summary><div class="faq-body">首批 2026 年 11 月中旬，按付款顺序发。如果产线延期超过两周，你可以无条件全额退款，不用给理由。</div></details>
+      <details class="reveal"><summary>可以试听吗？</summary><div class="faq-body">暂时只在杭州有两家合作店可以试听。其他地方建议先看第三方测评再决定，别只看我们的页面。</div></details>
+      <details class="reveal"><summary>坏了怎么办？</summary><div class="faq-body">两年质保，非人为损坏直接换新，运费我们出。500 台里每一台的编号我们都记着，找不到你的购买记录也能查。</div></details>
+      <details class="reveal"><summary>支持七天无理由吗？</summary><div class="faq-body">支持。拆封也可以退，只要外观无损伤。运费各自承担一半。</div></details>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <a class="logo" href="demo-shop.html" style="margin-bottom:14px"><span class="logo-mark">N</span>NOCTURNE</a>
+        <p class="small" style="max-width:34ch">为夜里工作的人做东西。第一件产品：一只不吵到隔壁的音箱。</p>
+      </div>
+      <div class="footer-col"><h4>产品</h4><a href="#spec">规格</a><a href="#detail">细节</a><a href="#order">预订</a></div>
+      <div class="footer-col"><h4>支持</h4><a href="#faq">发货</a><a href="#faq">退换</a><a href="#faq">质保</a></div>
+      <div class="footer-col"><h4>其他案例</h4><a href="demo-ai.html">AI 产品</a><a href="demo-studio.html">设计工作室</a><a href="../index.html">返回销售页</a></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> NOCTURNE · 示例站点（WhalePage Kit 案例）</span>
+      <span>纯静态演示 · 无真实商品</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/kit.js"></script>
+</body>
+</html>
