@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>赛博讣告生成器 · ligsa</title>
+<meta name="description" content="10 道题，生成一份属于你的赛博讣告。纯属娱乐。">
+<style>
+  :root{
+    --bg:#07070a; --fg:#eceae4; --dim:#8b8a84;
+    --ashes:#cfcabf; --stone:#1a1a1f; --line:rgba(207,202,191,.16);
+    --candle:#f0c987;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);min-height:100vh;
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    background-image:radial-gradient(90% 45% at 50% -8%,rgba(240,201,135,.10),transparent 62%),
+                     radial-gradient(70% 40% at 50% 108%,rgba(255,255,255,.045),transparent 66%);
+    background-attachment:fixed;overflow-x:hidden;
+  }
+  .app{width:100%;max-width:620px;margin:0 auto;padding:22px 22px calc(22px + env(safe-area-inset-bottom));
+       display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden}
+  .top{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.22em;color:var(--dim)}
+  .top b{color:var(--candle);font-weight:400}
+  .pbar{height:2px;background:rgba(255,255,255,.07);margin-top:20px;border-radius:2px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8b8a84,var(--candle));transition:width .35s ease}
+
+  .qwrap{flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:6vh 0 18px}
+  .qno{font-size:12px;letter-spacing:.2em;color:var(--dim);margin-bottom:14px}
+  .qtext{font-size:clamp(20px,5.2vw,28px);line-height:1.62;font-weight:800;margin:0 0 24px;text-wrap:balance}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{width:100%;text-align:left;background:rgba(255,255,255,.035);border:1px solid var(--line);color:var(--fg);
+       border-radius:12px;padding:15px 17px;font:inherit;font-size:15.5px;line-height:1.5;cursor:pointer;
+       transition:.16s;display:flex;gap:11px;align-items:flex-start}
+  .opt:hover{border-color:rgba(240,201,135,.45);background:rgba(240,201,135,.05)}
+  .opt:active{transform:scale(.99)}
+  .opt span.k{color:var(--candle);font-size:13px;flex:none;padding-top:2px}
+  .opt span:last-child{flex:1;min-width:0}
+
+  /* 结果 */
+  .res{display:none;flex-direction:column;padding-top:20px}
+  .res.on{display:flex}
+  .kick{font-size:12px;letter-spacing:.24em;color:var(--candle);margin-bottom:16px}
+
+  .stone{
+    position:relative;border-radius:180px 180px 10px 10px;
+    background:linear-gradient(170deg,#24242a,#15151a 58%,#0f0f13);
+    border:1px solid rgba(255,255,255,.09);
+    padding:46px 26px 34px;text-align:center;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .stone::before{
+    content:"";position:absolute;inset:10px;border-radius:170px 170px 6px 6px;
+    border:1px solid rgba(255,255,255,.05);pointer-events:none;
+  }
+  .rip{font-size:12px;letter-spacing:.5em;color:var(--dim);margin-bottom:16px;padding-left:.5em}
+  .name{font-family:"Songti SC","Noto Serif SC","STSong",serif;font-size:clamp(26px,7vw,36px);
+        font-weight:700;letter-spacing:.08em;color:#e9e4d8;margin:0}
+  .years{margin-top:10px;font-size:13px;letter-spacing:.22em;color:#9c9a92}
+  .epi{
+    margin:22px auto 0;max-width:92%;
+    font-family:"Songti SC","Noto Serif SC","STSong",serif;
+    font-size:clamp(15px,4.2vw,18px);line-height:1.9;color:#d5d0c4;
+    padding-top:18px;border-top:1px solid rgba(255,255,255,.09);
+  }
+  .cause{margin-top:18px;font-size:13px;line-height:1.8;color:#8b8a84}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  .cell{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(255,255,255,.02);min-width:0}
+  .cell .k{font-size:11px;letter-spacing:.16em;color:var(--dim);display:block;margin-bottom:6px}
+  .cell .v{font-size:15.5px;color:var(--fg);font-weight:700;word-break:break-word}
+  .cell.wide{grid-column:1/-1}
+
+  .bar{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-top:18px}
+  .primary{background:linear-gradient(135deg,#f4dcae,var(--candle));color:#241d0c;font-weight:800;font-size:15.5px;
+           padding:15px 18px;border:none;border-radius:12px;cursor:pointer}
+  .ghost{background:rgba(255,255,255,.05);color:var(--fg);border:1px solid var(--line);font-size:14.5px;
+         padding:15px 16px;border-radius:12px;cursor:pointer}
+  .primary:active,.ghost:active{transform:scale(.98)}
+
+  .warn{margin-top:16px;font-size:11.5px;line-height:1.9;color:#6f6e69;border-top:1px dashed rgba(255,255,255,.1);padding-top:14px}
+  .foot{margin-top:14px;display:flex;justify-content:space-between;font-size:11px;color:#46454a;letter-spacing:.14em}
+
+  .toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,12px);background:rgba(20,20,24,.96);
+         color:var(--candle);border:1px solid var(--line);padding:11px 20px;border-radius:999px;font-size:14px;
+         opacity:0;pointer-events:none;transition:.24s;z-index:20}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .shot{position:fixed;inset:0;background:rgba(3,3,5,.96);display:none;flex-direction:column;align-items:center;
+        justify-content:center;gap:14px;padding:18px;z-index:30}
+  .shot.on{display:flex}
+  .shot img{max-width:100%;max-height:70vh;border-radius:10px;box-shadow:0 24px 70px rgba(0,0,0,.75)}
+  .shot p{margin:0;font-size:12.5px;color:var(--dim);text-align:center;line-height:1.7}
+  .shot .row{display:flex;gap:10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><span><b>ligsa</b> · 赛博讣告</span><span>NO.06</span></div>
+  <div class="pbar" id="pbar"><i id="pbarIn"></i></div>
+
+  <div class="qwrap" id="qwrap">
+    <div class="qno" id="qno">第一问 / 共 10 问</div>
+    <h1 class="qtext" id="qtext">加载中</h1>
+    <div class="opts" id="opts"></div>
+  </div>
+
+  <div class="res" id="res">
+    <div class="kick" id="rKick">讣告已生成</div>
+
+    <div class="stone">
+      <div class="rip">R . I . P .</div>
+      <h1 class="name" id="rName">一位网友</h1>
+      <div class="years" id="rYears">1999 — 2031</div>
+      <div class="epi" id="rEpi"></div>
+      <div class="cause" id="rCause"></div>
+    </div>
+
+    <div class="grid">
+      <div class="cell"><span class="k">死 因 类 型</span><span class="v" id="rType">—</span></div>
+      <div class="cell"><span class="k">享 年</span><span class="v" id="rAge">—</span></div>
+      <div class="cell"><span class="k">遗 言</span><span class="v" id="rWord">—</span></div>
+      <div class="cell"><span class="k">稀 有 度</span><span class="v" id="rRare">—</span></div>
+      <div class="cell wide"><span class="k">出 席 葬 礼 的 人 数</span><span class="v" id="rPeople">—</span></div>
+    </div>
+
+    <div class="bar">
+      <button class="primary" id="again">重新投胎</button>
+      <button class="ghost" id="copy">复制</button>
+      <button class="ghost" id="save">存图</button>
+    </div>
+
+    <div class="warn">
+      本页面是纯娱乐产物，不预测任何真实事件，也不带任何诅咒。<br>
+      如果最近真的很难受，那一句话比这个页面有用：打 12356，或者找个活人说说话。
+    </div>
+  </div>
+
+  <div class="foot"><span>ligsa</span><span>ligsa.work/gaobie</span></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="shot" id="shot">
+  <p>长按图片保存到相册<br>或者点下面按钮下载</p>
+  <img id="shotImg" alt="赛博讣告">
+  <div class="row">
+    <button class="primary" id="dl">下载图片</button>
+    <button class="ghost" id="closeShot">关闭</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var NAME = '';
+  var QS = [
+    { q:'早上睁开眼，你第一个念头是：',
+      o:[ ['还能再睡五分钟','juan'], ['先看看群里有没有事','she'], ['看他昨天回我没','xin'], ['人为什么要起床','chou'] ] },
+    { q:'你手机相册里最多的是：',
+      o:[ ['工作群截图','juan'], ['别人的朋友圈','she'], ['表情包','chou'], ['聊天记录','xin'] ] },
+    { q:'周五晚上十点，你在：',
+      o:[ ['还在改东西','juan'], ['在酒局上装开心','she'], ['一个人看剧','xin'], ['已经刷了四小时短视频','chou'] ] },
+    { q:'你最常说的谎是：',
+      o:[ ['马上就好','juan'], ['我在忙','she'], ['我没事','xin'], ['明天开始','chou'] ] },
+    { q:'你的医保卡：',
+      o:[ ['在抽屉里，一直没空用','juan'], ['借给同事了','she'], ['不敢查余额','xin'], ['已经找不到了','chou'] ] },
+    { q:'你上一次情绪崩掉，是因为：',
+      o:[ ['一个改不完的需求','juan'], ['一句「你变了」','xin'], ['一只猫的视频','chou'], ['年会上没抽到奖','she'] ] },
+    { q:'如果要跟这个世界告别，你会：',
+      o:[ ['先把文档交接完','juan'], ['发一条朋友圈','she'], ['什么都不说','xin'], ['留一个谜语','chou'] ] },
+    { q:'你希望骨灰被：',
+      o:[ ['撒在公司楼下，方便打卡','juan'], ['撒在群里，让大家刷到','she'], ['做成戒指','xin'], ['分装成 108 份','chou'] ] },
+    { q:'你的葬礼上最可能出现的一幕：',
+      o:[ ['领导说「他真的很敬业」','juan'], ['有人拍照发朋友圈','she'], ['前任没有来','xin'], ['大家终于笑出了声','chou'] ] },
+    { q:'最后一个问题：你怕死吗？',
+      o:[ ['怕，我还有活没干完','juan'], ['怕，怕没人来','she'], ['不怕，我早就想休息了','xin'], ['死是什么，能吃吗','chou'] ] }
+  ];
+
+  var TYPES = {
+    juan:{ n:'过劳型', icon:'▮',
+      cause:['被自己的第 37 版方案熬死在凌晨三点','连续九天没睡够，被周一吓死','为了赶一个「不急」的需求，赶没了','在会上一句话没说，气竭而亡'],
+      word:['再给我五分钟就好','那个需求……改完了吗','我先走了，文档在共享盘','记得帮我把工位收拾一下'],
+      epi:['此处长眠一位执行力很强的人。<br>他从不迟到，包括这一次。',
+           '他把所有事都做完了，<br>除了活着。',
+           '生前最常说「马上好」。<br>现在他终于好了。'] },
+    she:{ n:'社死型', icon:'◍',
+      cause:['在工作大群发错一条消息，社死三天后心力衰竭','在年会上被点名表演，当场去世','把吐槽领导的话发给了领导本人，抢救无效','朋友圈忘了分组，被亲戚围观后气绝'],
+      word:['那条不是我发的','我可以解释','求你们别截图','把那条删了，谢谢'],
+      epi:['死因：手滑。<br>享年：手滑那年。',
+           '他一生谨慎，<br>只在最后那条消息上手滑了一次。',
+           '朋友圈设置了三天可见。<br>现在永久可见了。'] },
+    xin:{ n:'心碎型', icon:'◌',
+      cause:['看到喜欢的人官宣，心脏停摆','收到前任的婚礼请柬，当场气绝','等一条消息等了三年，等到最后一条','把「我们」改成「我」，然后没再改回来'],
+      word:['我祝福你，真的','我没事，你去吧','其实我早就知道了','别删我微信'],
+      epi:['活着的时候没说出的话，<br>刻在这里也还是没写。',
+           '他等了一辈子，<br>只等到一条「在吗」。',
+           '此处没有遗憾，<br>只有一段没发出去的草稿。'] },
+    chou:{ n:'抽象型', icon:'✦',
+      cause:['洗澡时想到一个绝妙的笑话，笑到呛水','睡前决定再刷五分钟，刷到天亮，被太阳晒死','点了一份外卖，被自己的选择香到昏厥','在深夜认真思考人生，人生先熬不住'],
+      word:['你听我说完，真的很好笑','这个梗你们不懂','别哭了，我死得挺轻松的','帮我把那个表情包发出去'],
+      epi:['它真的很好笑。<br>可惜没人听完。',
+           '一个把日子过成段子的人，<br>最后一次也成了段子。',
+           '死因离谱，<br>生因更离谱。'] }
+  };
+
+  var CURLY = ['万中无一','仅此一份','不太常见','挺普通的'];
+  var cur=0, dim={juan:0,she:0,xin:0,chou:0}, age=0, T='juan', epiTxt='';
+  var $ = function(i){ return document.getElementById(i); };
+  function say(t){ var e=$('toast'); e.textContent=t; e.classList.add('on'); clearTimeout(say._t); say._t=setTimeout(function(){e.classList.remove('on')},1600); }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+  function renderQ(){
+    var q = QS[cur];
+    $('qno').textContent = '第 ' + (cur+1) + ' 问 / 共 ' + QS.length + ' 问';
+    $('qtext').textContent = q.q;
+    $('pbarIn').style.width = (cur/QS.length*100)+'%';
+    var box=$('opts'); box.innerHTML='';
+    q.o.forEach(function(o,i){
+      var b=document.createElement('button');
+      b.className='opt';
+      b.innerHTML='<span class="k">'+'ABCD'[i]+'</span><span>'+o[0]+'</span>';
+      b.onclick=function(){
+        dim[o[1]]++;
+        cur++;
+        if (cur>=QS.length) finish(); else renderQ();
+      };
+      box.appendChild(b);
+    });
+  }
+
+  function finish(){
+    $('pbarIn').style.width='100%';
+    var best='chou', bv=-1;
+    Object.keys(dim).forEach(function(k){ if (dim[k]>bv){ bv=dim[k]; best=k; } });
+    T = best;
+    var t = TYPES[T];
+    age = 26 + Math.floor(Math.random()*24);
+    epiTxt = pick(t.epi);
+    var birth = 2026 - age;
+    $('qwrap').style.display='none';
+    $('res').classList.add('on');
+    $('rName').textContent = NAME || '一位网友';
+    $('rYears').textContent = birth + ' — 2026';
+    $('rEpi').innerHTML = epiTxt;
+    $('rCause').innerHTML = '死因：' + pick(t.cause);
+    $('rType').textContent = t.n;
+    $('rAge').textContent = age + ' 岁';
+    $('rWord').textContent = '「' + pick(t.word) + '」';
+    var total = dim.juan+dim.she+dim.xin+dim.chou;
+    $('rRare').textContent = bv >= 7 ? CURLY[0] : bv >= 5 ? CURLY[1] : bv >= 3 ? CURLY[2] : CURLY[3];
+    $('rPeople').textContent = (Math.max(0, Math.round((bv - 2) * 6 + Math.random()*8))) + ' 人（其中 ' + Math.max(0, bv-2) + ' 个是真心的）';
+    $('rKick').textContent = '讣告已生成 · 共 ' + total + ' 题作答';
+    document.title = t.n + ' · 赛博讣告 · ligsa';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  $('again').onclick=function(){
+    cur=0; dim={juan:0,she:0,xin:0,chou:0};
+    $('res').classList.remove('on'); $('qwrap').style.display='flex';
+    renderQ(); window.scrollTo({top:0,behavior:'instant'});
+  };
+
+  function summary(){
+    return '我的赛博讣告：\n' + $('rName').textContent + '\n' + $('rYears').textContent +
+      '\n死因：' + $('rCause').textContent.replace('死因：','') +
+      '\n墓志铭：' + epiTxt.replace(/<br>/g,' ').replace(/<[^>]+>/g,'') +
+      '\n遗言：' + $('rWord').textContent +
+      '\n\n生成你的 → ligsa.work/gaobie';
+  }
+  function fb(txt,cb){ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); cb(); }catch(e){ say('复制失败，请长按选择'); } document.body.removeChild(ta); }
+  $('copy').onclick=function(){ var t=summary();
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){say('已复制')},function(){fb(t,function(){say('已复制')})});
+    else fb(t, function(){say('已复制')}); };
+
+  // ---- 出图 ----
+  var W=1080, H=1440;
+  function makeImage(){
+    var c=document.createElement('canvas'); c.width=W; c.height=H;
+    var x=c.getContext('2d');
+    var g=x.createLinearGradient(0,0,W,H); g.addColorStop(0,'#0a0a0d'); g.addColorStop(1,'#050507');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+    var rg=x.createRadialGradient(W/2,180,0,W/2,180,W*1.1);
+    rg.addColorStop(0,'rgba(240,201,135,.13)'); rg.addColorStop(1,'rgba(240,201,135,0)');
+    x.fillStyle=rg; x.fillRect(0,0,W,H*.75);
+
+    x.fillStyle='#8b8a84'; x.font='400 30px "Songti SC",serif';
+    x.textAlign='center';
+    x.fillText('R  .  I  .  P  .', W/2, 168);
+
+    // 墓碑
+    // 先算行数，墓碑高度随墓志铭变
+    var plain0 = epiTxt.replace(/<br>/g,'\n').replace(/<[^>]+>/g,'');
+    var lines0 = plain0.split('\n');
+    var causeY = 296 + lines0.length*54 + 30;
+    var bw=740, bx=(W-bw)/2, by=250, bh=causeY+86, r=170;
+    x.save();
+    var sg=x.createLinearGradient(bx,by,bx+bw,by+bh);
+    sg.addColorStop(0,'#26262c'); sg.addColorStop(.6,'#16161b'); sg.addColorStop(1,'#101014');
+    x.fillStyle=sg;
+    x.beginPath();
+    x.moveTo(bx, by+bh); x.lineTo(bx, by+r);
+    x.quadraticCurveTo(bx, by, bx+r, by);
+    x.lineTo(bx+bw-r, by);
+    x.quadraticCurveTo(bx+bw, by, bx+bw, by+r);
+    x.lineTo(bx+bw, by+bh);
+    x.closePath(); x.fill();
+    x.strokeStyle='rgba(255,255,255,.10)'; x.lineWidth=2; x.stroke();
+    x.restore();
+
+    // 名字
+    x.fillStyle='#eae5d8'; x.font='700 60px "Songti SC","Noto Serif SC",serif';
+    x.fillText($('rName').textContent, W/2, by+138);
+    x.fillStyle='#9c9a92'; x.font='400 27px "Songti SC",serif';
+    x.fillText($('rYears').textContent, W/2, by+190);
+
+    // 分隔线
+    x.strokeStyle='rgba(255,255,255,.10)'; x.lineWidth=1;
+    x.beginPath(); x.moveTo(bx+80, by+232); x.lineTo(bx+bw-80, by+232); x.stroke();
+
+    // 墓志铭（折行）
+    x.fillStyle='#d8d3c6'; x.font='400 33px "Songti SC",serif';
+    var plain = epiTxt.replace(/<br>/g,'\n').replace(/<[^>]+>/g,'');
+    var lines = plain.split('\n');
+    for (var i=0;i<lines.length;i++) x.fillText(lines[i], W/2, by+296+i*54);
+
+    // 死因
+    x.fillStyle='#8b8a84'; x.font='400 25px "PingFang SC",sans-serif';
+    var cause = $('rCause').textContent.replace('死因：','');
+    x.fillText('死因：' + cause.slice(0,20), W/2, by+causeY);
+
+    // 中部推广位
+    x.strokeStyle='rgba(240,201,135,.20)'; x.lineWidth=2;
+    x.strokeRect(W/2-260, H-520, 520, 210);
+    x.fillStyle='#6f6e69'; x.font='400 24px "PingFang SC",sans-serif';
+    x.fillText('你也可以有一个', W/2, H-460);
+    x.fillStyle='#f0c987'; x.font='700 44px "PingFang SC",sans-serif';
+    x.fillText('ligsa.work/gaobie', W/2, H-396);
+    x.fillStyle='#575652'; x.font='400 22px "PingFang SC",sans-serif';
+    x.fillText('10 道题，一份赛博讣告', W/2, H-346);
+
+    // 底部信息
+    x.fillStyle='#5c5b57'; x.font='400 24px "PingFang SC",sans-serif';
+    x.fillText($('rType').textContent + ' · 享年 ' + $('rAge').textContent, W/2, H-110);
+    x.textAlign='left';
+    return c.toDataURL('image/png');
+  }
+
+  var lastUrl='';
+  $('save').onclick=function(){ lastUrl=makeImage(); $('shotImg').src=lastUrl; $('shot').classList.add('on'); };
+  $('closeShot').onclick=function(){ $('shot').classList.remove('on'); };
+  $('dl').onclick=function(){ var a=document.createElement('a'); a.href=lastUrl||makeImage(); a.download='ligsa-gaobie-'+Date.now()+'.png'; a.click(); say('已保存'); };
+
+  renderQ();
+})();
+</script>
+</body>
+</html>
