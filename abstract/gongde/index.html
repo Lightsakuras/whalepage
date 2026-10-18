@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>赛博功德机 · 敲一下，班味少一点</title>
+<meta name="description" content="敲一下功德 +1。不用下载，点开就敲。">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  html,body{height:100%}
+  body{
+    background:#0a0a0c;color:#f2f2f2;overflow:hidden;
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(60% 45% at 50% 22%,rgba(255,214,102,.13),transparent 65%),
+               radial-gradient(70% 50% at 50% 100%,rgba(120,60,255,.10),transparent 70%);
+  }
+  .top{
+    position:relative;z-index:2;width:100%;padding:22px 22px 0;
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:11.5px;letter-spacing:.2em;color:#8a8a92;
+  }
+  .top b{color:#ffd666;letter-spacing:.14em}
+
+  .count{
+    position:relative;z-index:2;margin-top:6vh;text-align:center;
+  }
+  .lab{font-size:12px;letter-spacing:.34em;color:#8a8a92}
+  .num{
+    margin-top:8px;font-size:clamp(64px,20vw,92px);font-weight:800;line-height:1;
+    font-variant-numeric:tabular-nums;
+    background:linear-gradient(180deg,#fff3c4,#ffd666 55%,#e0a63c);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    transition:transform .06s;
+  }
+  .num.hit{transform:scale(1.06)}
+  .sub{margin-top:12px;font-size:13px;color:#8a8a92;letter-spacing:.1em;height:18px}
+
+  .stage{
+    position:relative;z-index:2;flex:1;width:100%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .fish{
+    position:relative;width:min(62vw,258px);aspect-ratio:1;
+    border-radius:34% 34% 36% 36%/30% 30% 40% 40%;
+    background:
+      radial-gradient(120% 90% at 32% 22%,#5b4630 0%,#3a2c1d 42%,#241a10 78%,#1a120a 100%);
+    box-shadow:
+      inset 0 10px 26px rgba(255,222,160,.16),
+      inset 0 -18px 40px rgba(0,0,0,.65),
+      0 30px 60px rgba(0,0,0,.6);
+    cursor:pointer;transition:transform .07s ease;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .fish::after{
+    content:"";position:absolute;left:16%;right:16%;top:44%;height:9%;
+    border-radius:99px;
+    background:linear-gradient(180deg,#120c07,#2c2116);
+    box-shadow:inset 0 2px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,222,160,.10);
+  }
+  .fish:active{transform:scale(.965)}
+  .fish.pulse{animation:pulse .22s ease}
+  @keyframes pulse{0%{transform:scale(1)}45%{transform:scale(.955)}100%{transform:scale(1)}}
+
+  .ring{
+    position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;
+    border:2px solid rgba(255,214,102,.75);border-radius:50%;pointer-events:none;
+    animation:ring .7s ease-out forwards;
+  }
+  @keyframes ring{to{width:280px;height:280px;margin:-140px 0 0 -140px;opacity:0;border-width:1px}}
+
+  .float{
+    position:absolute;left:50%;top:38%;pointer-events:none;
+    font-size:16px;font-weight:700;color:#ffd666;opacity:0;
+    transform:translateX(-50%);animation:fl .8s ease-out forwards;white-space:nowrap;
+  }
+  @keyframes fl{0%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-64px)}}
+
+  .bottom{
+    position:relative;z-index:2;width:100%;padding:0 22px 30px;display:flex;flex-direction:column;align-items:center;gap:14px;
+  }
+  .goal{width:100%;max-width:380px}
+  .goal-t{display:flex;justify-content:space-between;font-size:11.5px;color:#8a8a92;letter-spacing:.14em;margin-bottom:8px}
+  .track{height:5px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+  .track span{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#ffd666,#ffeeb0);transition:width .25s}
+  .tips{font-size:11.5px;color:#6f6f78;letter-spacing:.1em;text-align:center;line-height:1.8}
+  .row{display:flex;gap:10px;width:100%;max-width:380px}
+  .b{
+    flex:1;font-family:inherit;font-size:13.5px;font-weight:600;padding:12px;border-radius:12px;
+    background:transparent;border:1px solid rgba(255,255,255,.16);color:#d8d8de;cursor:pointer;
+  }
+  .b:active{background:rgba(255,255,255,.07)}
+
+  /* 达标提示 */
+  .toast{
+    position:fixed;left:50%;top:22%;transform:translate(-50%,-10px);
+    background:rgba(20,18,10,.92);border:1px solid rgba(255,214,102,.45);
+    color:#ffe9a8;padding:14px 20px;border-radius:14px;font-size:14px;line-height:1.7;
+    text-align:center;opacity:0;pointer-events:none;transition:.3s;z-index:9;max-width:82vw;
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span>赛博功德机</span>
+  <b id="combo">连击 0</b>
+</div>
+
+<div class="count">
+  <div class="lab">功 德</div>
+  <div class="num" id="num">0</div>
+  <div class="sub" id="sub">敲一下，班味少一点</div>
+</div>
+
+<div class="stage">
+  <div class="fish" id="fish"></div>
+</div>
+
+<div class="bottom">
+  <div class="goal">
+    <div class="goal-t"><span>今日目标 108</span><span id="goalTxt">0 / 108</span></div>
+    <div class="track"><span id="track"></span></div>
+  </div>
+  <p class="tips">点木鱼就能敲 · <span id="bangTxt">已超度 0 次想骂人的瞬间</span></p>
+  <div class="row">
+    <button class="b" id="miss">干一件缺德事</button>
+    <button class="b" id="save">保存战绩</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var merit = 0, combo = 0, maxCombo = 0, last = 0, timer = null, miss = 0, goalHit = false;
+var $ = function(id){ return document.getElementById(id); };
+
+/* ---------- 音效：WebAudio 合成木鱼声（不需要音频文件） ---------- */
+var ac = null;
+function knock(){
+  try {
+    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    var t = ac.currentTime;
+
+    // 木头主体：短促的正弦 + 快速衰减
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(430 + Math.random()*26, t);
+    o.frequency.exponentialRampToValueAtTime(180, t + 0.075);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.28, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+    o.connect(g); g.connect(ac.destination);
+    o.start(t); o.stop(t + 0.16);
+
+    // 敲击的"嗒"：白噪声短脉冲
+    var len = Math.floor(ac.sampleRate * 0.035);
+    var buf = ac.createBuffer(1, len, ac.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i=0;i<len;i++){ d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 3); }
+    var s = ac.createBufferSource(), sg = ac.createGain();
+    s.buffer = buf; sg.gain.value = 0.16;
+    s.connect(sg); sg.connect(ac.destination); s.start(t);
+  } catch(e) {}
+}
+
+function ripple(){
+  var r = document.createElement('div');
+  r.className = 'ring';
+  $('fish').appendChild(r);
+  setTimeout(function(){ r.remove(); }, 720);
+}
+
+function floatText(txt){
+  var f = document.createElement('div');
+  f.className = 'float'; f.textContent = txt;
+  $('fish').parentNode.appendChild(f);
+  setTimeout(function(){ f.remove(); }, 820);
+}
+
+function toast(msg){
+  var t = $('toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(t.__h); t.__h = setTimeout(function(){ t.classList.remove('on'); }, 2600);
+}
+
+function refresh(){
+  $('num').textContent = merit;
+  var pct = Math.min(merit / 108 * 100, 100);
+  $('track').style.width = pct + '%';
+  $('goalTxt').textContent = merit + ' / 108';
+  $('combo').textContent = '连击 ' + combo;
+  $('bangTxt').textContent = '已超度 ' + (merit + miss * 9) + ' 次想骂人的瞬间';
+}
+
+function hit(e){
+  if (e && e.cancelable) e.preventDefault();
+  var now = Date.now();
+  combo = (now - last < 620) ? combo + 1 : 1;
+  last = now;
+  if (combo > maxCombo) maxCombo = combo;
+
+  // 连击加成：10 连以后每次多 +1，最高 +5
+  var gain = 1 + Math.min(Math.floor(combo / 10), 4);
+  merit += gain;
+
+  $('num').classList.add('hit');
+  setTimeout(function(){ $('num').classList.remove('hit'); }, 70);
+  $('fish').classList.add('pulse');
+  setTimeout(function(){ $('fish').classList.remove('pulse'); }, 230);
+
+  knock(); ripple();
+  floatText('+' + gain + (combo >= 10 ? '  x' + combo : ''));
+
+  if (combo === 10) { $('sub').textContent = '手速惊人，佛祖加班了'; }
+  else if (combo === 30) { $('sub').textContent = '三十连，建议挂号'; }
+  else if (combo === 60) { $('sub').textContent = '你这不是敲木鱼，是发电'; }
+  else if (combo < 10) { $('sub').textContent = combo > 1 ? '功德 +' + gain : '敲一下，班味少一点'; }
+
+  if (!goalHit && merit >= 108) {
+    goalHit = true;
+    toast('今日功德已满 108\n按佛教说法，这叫「功课圆满」\n按打工人的说法，这叫「今天没白过」');
+  }
+  refresh();
+}
+
+$('fish').addEventListener('pointerdown', hit, {passive:false});
+document.addEventListener('keydown', function(e){
+  if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); hit(); }
+});
+
+/* 缺德：一次扣 1 功德——因为看了个地狱笑话 */
+$('miss').onclick = function(){
+  miss++;
+  if (merit > 0) merit -= 1;
+  combo = 0;
+  $('num').textContent = merit;
+  $('combo').textContent = '连击 0';
+  $('sub').textContent = '功德 -1，缺德 +1';
+  toast('你刚刚是不是笑了\n笑了就要扣功德\n——这就是赛博玄学的逻辑');
+  refresh();
+};
+
+/* 保存战绩：把数字做成图 */
+$('save').onclick = function(){
+  var W = 900, H = 1200;
+  var c = document.createElement('canvas'); c.width = W; c.height = H;
+  var x = c.getContext('2d');
+  x.fillStyle = '#0a0a0c'; x.fillRect(0,0,W,H);
+  var g = x.createRadialGradient(W/2,H*0.26,0,W/2,H*0.26,W*0.8);
+  g.addColorStop(0,'rgba(255,214,102,.20)'); g.addColorStop(1,'rgba(255,214,102,0)');
+  x.fillStyle = g; x.fillRect(0,0,W,H);
+
+  x.textAlign = 'center';
+  x.fillStyle = 'rgba(255,255,255,.5)'; x.font = '400 26px "PingFang SC",sans-serif';
+  x.fillText('赛博功德机', W/2, 132);
+
+  x.fillStyle = '#8a8a92'; x.font = '500 28px "PingFang SC",sans-serif';
+  x.fillText('今 日 功 德', W/2, 300);
+
+  x.fillStyle = '#ffd666'; x.font = '800 190px "PingFang SC",sans-serif';
+  x.fillText(String(merit), W/2, 490);
+
+  x.fillStyle = '#d8d8de'; x.font = '500 32px "PingFang SC",sans-serif';
+  x.fillText('最高连击 ' + maxCombo + ' · 缺德 ' + miss + ' 次', W/2, 580);
+
+  x.fillStyle = '#8a8a92'; x.font = '400 27px "PingFang SC",sans-serif';
+  x.fillText('已超度 ' + (merit + miss*9) + ' 次想骂人的瞬间', W/2, 650);
+
+  x.strokeStyle = 'rgba(255,255,255,.14)'; x.lineWidth = 2;
+  x.beginPath(); x.moveTo(120, 720); x.lineTo(W-120, 720); x.stroke();
+
+  var lines = ['你今天已经很努力了', '剩下的交给概率', '功德不能兑换任何东西', '但敲一会儿确实会好一点'];
+  x.fillStyle = 'rgba(255,255,255,.42)'; x.font = '400 26px "PingFang SC",sans-serif';
+  lines.forEach(function(t,i){ x.fillText(t, W/2, 790 + i*46); });
+
+  x.fillStyle = 'rgba(255,255,255,.30)'; x.font = '400 24px "PingFang SC",sans-serif';
+  x.fillText('鲸鱼做网页 · 赛博功德机', W/2, H - 96);
+
+  var a = document.createElement('a');
+  a.href = c.toDataURL('image/png');
+  a.download = '功德-' + merit + '.png';
+  a.click();
+  toast('战绩图已生成\n（iPhone 上如果没反应，长按图片保存）');
+};
+
+refresh();
+</script>
+</body>
+</html>

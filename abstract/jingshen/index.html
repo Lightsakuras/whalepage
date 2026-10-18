@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>精神状态鉴定所 · 测测你还剩几分清醒</title>
+<meta name="description" content="8 道题，30 秒，测出你此刻的精神状态。不准，但很爽。">
+<meta property="og:title" content="精神状态鉴定所">
+<meta property="og:description" content="8 道题，30 秒，测出你此刻的精神状态。">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --bg:#08080c; --fg:#f4f5fa; --muted:#8b90a3; --line:rgba(255,255,255,.1);
+    --n1:#b6ff3c; --n2:#7c5cff; --n3:#22d3ee; --warn:#ff4d6d;
+  }
+  html,body{min-height:100%}
+  body{
+    background:var(--bg); color:var(--fg);
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(60% 40% at 82% 6%,rgba(124,92,255,.30),transparent 62%),
+      radial-gradient(55% 40% at 8% 96%,rgba(34,211,238,.18),transparent 62%),
+      radial-gradient(40% 30% at 50% 50%,rgba(182,255,60,.06),transparent 70%);
+  }
+  body::after{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.35;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:100% 4px;
+  }
+  .app{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:0 22px 40px;min-height:100vh;display:flex;flex-direction:column}
+  .screen{display:none;flex:1;flex-direction:column}
+  .screen.on{display:flex}
+
+  /* ---------- 封面 ---------- */
+  .brand{display:flex;align-items:center;gap:10px;padding:24px 0 0;font-size:13px;letter-spacing:.18em;color:var(--muted)}
+  .brand i{width:8px;height:8px;border-radius:50%;background:var(--n1);box-shadow:0 0 12px var(--n1);display:block}
+  .cover{flex:1;display:flex;flex-direction:column;justify-content:center;padding:8vh 0 0}
+  .kicker{font-size:13px;letter-spacing:.3em;color:var(--n1);margin-bottom:20px}
+  h1{font-size:clamp(34px,9.6vw,52px);line-height:1.16;font-weight:800;letter-spacing:-.01em}
+  h1 em{
+    font-style:normal;display:block;
+    background:linear-gradient(96deg,var(--n1),#8dffd0 40%,var(--n3));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{margin-top:22px;font-size:16px;line-height:1.75;color:#a9aebf;max-width:92%}
+  .facts{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}
+  .facts span{font-size:12.5px;color:#c9cede;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+  .cta{margin-top:auto;padding-top:36px}
+  .btn{
+    width:100%;border:0;border-radius:16px;padding:18px;font-size:17px;font-weight:700;
+    color:#08080c;background:linear-gradient(96deg,var(--n1),#7dffb8);
+    box-shadow:0 10px 30px rgba(182,255,60,.22);cursor:pointer;font-family:inherit;
+  }
+  .btn:active{transform:scale(.985)}
+  .tip{margin-top:14px;font-size:12px;color:var(--muted);text-align:center;line-height:1.6}
+
+  /* ---------- 答题 ---------- */
+  .bar{height:4px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:22px;overflow:hidden}
+  .bar span{display:block;height:100%;width:12.5%;border-radius:99px;background:linear-gradient(90deg,var(--n2),var(--n3));transition:width .3s}
+  .qnum{margin-top:22px;font-size:12px;letter-spacing:.22em;color:var(--muted)}
+  .q{margin-top:14px;font-size:clamp(22px,6.2vw,28px);line-height:1.42;font-weight:700}
+  .opts{margin-top:28px;display:flex;flex-direction:column;gap:12px}
+  .opt{
+    text-align:left;font-family:inherit;cursor:pointer;
+    background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:14px;
+    padding:15px 16px;color:#dfe3ef;font-size:15.5px;line-height:1.5;
+    display:flex;gap:12px;align-items:flex-start;transition:background .16s,border-color .16s,transform .12s;
+  }
+  .opt b{color:var(--n1);font-weight:700;flex:none;font-size:13px;margin-top:2px;opacity:.8}
+  .opt:active{transform:scale(.99);background:rgba(182,255,60,.10);border-color:rgba(182,255,60,.5)}
+
+  /* ---------- 结果 ---------- */
+  .res{flex:1;display:flex;flex-direction:column;padding-top:8px}
+  .rtop{font-size:12px;letter-spacing:.24em;color:var(--muted);margin-top:22px}
+  .rname{margin-top:12px;font-size:clamp(32px,9vw,46px);font-weight:800;line-height:1.14;letter-spacing:-.01em}
+  .rtag{margin-top:12px;font-size:16px;line-height:1.7;color:#b9bfd0}
+  .rmeta{display:flex;align-items:baseline;gap:10px;margin-top:20px}
+  .rmeta b{font-size:44px;font-weight:800;
+    background:linear-gradient(96deg,var(--n1),var(--n3));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .rmeta span{font-size:13px;color:var(--muted)}
+  .card{margin-top:24px;border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:rgba(255,255,255,.035)}
+  .card h3{font-size:12px;letter-spacing:.22em;color:var(--n3);font-weight:600;margin-bottom:12px}
+  .card li{list-style:none;font-size:15px;line-height:1.66;color:#d6dae6;padding-left:18px;position:relative;margin-bottom:8px}
+  .card li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;border-radius:50%;background:var(--n1);opacity:.75}
+  .card li:last-child{margin-bottom:0}
+  .rx{color:#ffe27a}
+  .btns{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+  .btn2{
+    width:100%;font-family:inherit;cursor:pointer;border-radius:14px;padding:16px;font-size:16px;font-weight:600;
+    background:transparent;border:1px solid rgba(255,255,255,.22);color:var(--fg);
+  }
+  .btn2.pri{background:linear-gradient(96deg,var(--n2),var(--n3));border:0;color:#0a0a12}
+  .btn2:active{transform:scale(.99)}
+  .again{margin-top:14px;text-align:center;font-size:13px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+  /* 出图预览 */
+  .shot{position:fixed;inset:0;z-index:20;background:rgba(4,4,8,.92);backdrop-filter:blur(6px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:16px}
+  .shot.on{display:flex}
+  .shot img{max-width:100%;max-height:74vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .shot p{font-size:13px;color:#b9bfd0;text-align:center;line-height:1.7}
+  .shot .row{display:flex;gap:10px;width:100%;max-width:340px}
+  .shot a,.shot button{
+    flex:1;font-family:inherit;font-size:15px;font-weight:600;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,.2);
+    background:transparent;color:#fff;text-align:center;text-decoration:none;cursor:pointer;
+  }
+  .shot a{background:linear-gradient(96deg,var(--n1),#7dffb8);color:#08080c;border:0}
+
+  .foot{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:11.5px;color:#6b7183;letter-spacing:.1em}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="brand"><i></i><span>精神状态鉴定所</span></div>
+
+  <!-- 封面 -->
+  <section class="screen on" id="s-cover">
+    <div class="cover">
+      <div class="kicker">8 道题 · 30 秒 · 不收费</div>
+      <h1>测测你的<em>精神状态</em></h1>
+      <p class="lede">不是心理测评，是个乐子。结果不准，但可能会让你把截图发到群里。</p>
+      <div class="facts"><span>12 种人格</span><span>无广告</span><span>不上传任何数据</span></div>
+    </div>
+    <div class="cta">
+      <button class="btn" id="start">开始鉴定</button>
+      <p class="tip">全程在你自己手机上算，关掉就走。</p>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="s-quiz">
+    <div class="bar"><span id="bar"></span></div>
+    <div class="qnum" id="qnum">01 / 08</div>
+    <h2 class="q" id="q">…</h2>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="s-res">
+    <div class="res">
+      <div class="rtop">鉴定结果</div>
+      <h2 class="rname" id="rname">…</h2>
+      <p class="rtag" id="rtag">…</p>
+      <div class="rmeta"><b id="rmatch">92</b><span>% 符合你的现状</span></div>
+
+      <div class="card">
+        <h3>主要症状</h3>
+        <ul id="rsym"></ul>
+      </div>
+      <div class="card">
+        <h3>医嘱</h3>
+        <ul id="rrx"></ul>
+      </div>
+
+      <div class="btns">
+        <button class="btn2 pri" id="mkimg">生成结果图（可保存发群）</button>
+        <button class="btn2" id="reshare">换个人测 · 复制文案</button>
+      </div>
+      <div class="again" id="again">再测一次</div>
+
+      <div class="foot"><span>鲸鱼做网页</span><span>精神状态鉴定所 v1.0</span></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="shot" id="shot">
+  <img id="shotimg" alt="结果图">
+  <p>长按图片保存到相册<br>或点下面按钮直接下载</p>
+  <div class="row"><a id="dl" download="精神状态鉴定.png">下载图片</a><button id="close">关闭</button></div>
+</div>
+
+<script>
+/* ============ 题目：每题 4 个选项，分别给 疯/丧/抽象/稳 加分 ============ */
+var QS = [
+  { q:'早上闹钟响第三遍时，你脑子里第一句话是：',
+    o:[['再睡五分钟，五分钟就好','稳'],['我为什么还活着','丧'],['要不今天辞职吧','疯'],['起床，但灵魂留在床上','抽象']] },
+  { q:'同事在群里 @ 你，说「这个方案再改一版」，你：',
+    o:[['好的收到，马上改','稳'],['先回个「嗯」，然后发呆十分钟','抽象'],['手指已经在打字骂人了，但删掉了','疯'],['改吧，反正我的人生也是这样','丧']] },
+  { q:'你的手机相册里，最近 100 张照片是：',
+    o:[['猫、狗、天空、云','稳'],['截图：聊天记录、备忘录、别人的文案','抽象'],['全是黑屏和模糊的桌面','疯'],['截图：工资条、体检报告、房租','丧']] },
+  { q:'凌晨两点你还醒着，通常是因为：',
+    o:[['在刷「如何早睡」的帖子','抽象'],['emo，但说不清在 emo 什么','丧'],['突然想起三年前一句说错的话','疯'],['刚加完班，脑子还在跑','稳']] },
+  { q:'朋友问你「最近怎么样」，你的真实回答是：',
+    o:[['挺好的，就是有点累','稳'],['活着','丧'],['我已经不知道怎么回答了','疯'],['我很好，只是偶尔想把自己折叠起来','抽象']] },
+  { q:'看到「已读不回」三个字，你的第一反应：',
+    o:[['人家可能忙','稳'],['开始复盘自己上一条说了什么','丧'],['直接把聊天框删了','疯'],['已读不回也是一种回答，我接受','抽象']] },
+  { q:'你现在最想拥有的一项超能力：',
+    o:[['暂停时间，让我睡够','丧'],['一键清空所有人的期待','疯'],['把自己上传到云端，物理身体不要了','抽象'],['永远保持情绪稳定','稳']] },
+  { q:'如果此刻必须发一条朋友圈，你会发：',
+    o:[['一张风景，配「随便拍拍」','稳'],['什么都没有，只是设置了仅自己可见','丧'],['一段前言不搭后语的话，然后删掉','疯'],['一张黑白图，配文「系统维护中」','抽象']] }
+];
+
+/* ============ 结果：4 个维度 × 3 档 ============ */
+var RES = {
+  '疯':[
+    { n:'定时爆炸体', t:'外面看着没事，里面已经倒计时了。',
+      s:['回复「好的」的时候，指甲在掐手心','突然对很小的事产生巨大情绪','删掉了三条已经打好的消息'],
+      r:['今天就别硬撑了，找个没人的地方骂两句','把「我不生气」这句话从你的词库里删掉','生气是正常的，你不需要每次都体面'] },
+    { n:'发疯文学活体样本', t:'情绪来得快，去得也快，但每次都很真。',
+      s:['凌晨发过很长的一段话，早上自己删了','在备忘录里写小说，主角全是自己','对着空气演过一场完整的吵架'],
+      r:['把想说的话写在纸上，不用发出去','找一个不会评价你的人，每周说十句话','你的激烈不是毛病，是还没被接住'] },
+    { n:'已疯未遂', t:'还没疯，是因为你一直在忍。',
+      s:['心里骂了很多遍，脸上还是笑的','被冒犯时第一反应是反思自己','已经很久没有发过脾气了'],
+      r:['练习一次「不解释的拒绝」','今天允许自己有一次不高兴','忍不是修养，是慢性消耗'] }
+  ],
+  '丧':[
+    { n:'液态电池', t:'电量在 20% 上下浮动，永远充不满。',
+      s:['起床需要给自己做心理建设','对以前喜欢的事提不起劲','周末过完比上班还累'],
+      r:['先睡够，别用意志力补觉','今天只做一件小事，做完就算成功','低电量不是懒，是真没电'] },
+    { n:'低电量模式', t:'还能运行，但只保留最必要的功能。',
+      s:['社交靠复制粘贴固定回复','消息攒到十几个才一起回','能点外卖绝不做饭'],
+      r:['把「必须做的事」砍到三件','关掉一半的通知','省电模式不是故障，是保护机制'] },
+    { n:'床上哲学家', t:'躺着的两个小时，想完了整个人生。',
+      s:['凌晨思考过宇宙和意义','白天想的和晚上想的完全是两个人','躺着的时候最有表达欲'],
+      r:['床头放纸笔，想到就写，写完就睡','别在凌晨做任何决定','你的深刻可以留到白天用'] }
+  ],
+  '抽象':[
+    { n:'赛博仙人掌', t:'表面没事，内部缺水，还长刺。',
+      s:['用梗说话，认真说话会尴尬','和人聊天靠表情包撑场','情绪上来时先想「这能做成什么梗」'],
+      r:['找一个人，认真说三句不带梗的话','允许自己有一次不好笑','梗是盔甲，不是皮肤'] },
+    { n:'抽象本体', t:'你不是在抽象，你是抽象本身。',
+      s:['说话没有逻辑但对方莫名懂了','笑点很奇怪，且解释不了','把生活过成了一场行为艺术'],
+      r:['把最近的荒诞记下来，它有价值','找同类，你们之间不用翻译','你的怪不是问题，是稀缺'] },
+    { n:'认知失调观察员', t:'你一边清醒地看着自己失控，一边记笔记。',
+      s:['能精准分析自己的问题，然后不改','给自己当心理医生，还收费那种','对一切都保持半步距离'],
+      r:['从「观察」走到「做一次」','允许自己难看一次','分析不能代替经历'] }
+  ],
+  '稳':[
+    { n:'职场忍者', t:'所有情绪都处理在内部，代价是你自己。',
+      s:['被夸「情绪稳定」，你听了想笑','从不在群里表达真实意见','已经很久没和人吵过架了'],
+      r:['试着表达一次「我不太同意」','稳定不是没有情绪，是不外露','你的懂事，别人看不见成本'] },
+    { n:'情绪黑洞', t:'你很稳，因为什么都往里吞。',
+      s:['难过来的时候先想「没必要」','习惯自己消化，不麻烦别人','别人崩溃时会来找你，你崩溃时找谁'],
+      r:['找一个人，说一次「我需要帮忙」','允许自己麻烦别人一次','吞下去的东西不会消失'] },
+    { n:'假装正常大师', t:'你演得很好，好到自己也快信了。',
+      s:['公共场合永远得体','独处时会有种说不出的空','别人眼里的你和镜子里的你不太一样'],
+      r:['找一个不用演的地方待着','每周留两小时给「不像你」的自己','演久了会忘记本来的台词'] }
+  ]
+};
+
+var order = ['疯','丧','抽象','稳'];
+var score = {'疯':0,'丧':0,'抽象':0,'稳':0};
+var idx = 0;
+
+var $ = function(id){ return document.getElementById(id); };
+function show(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('on'); }); $(id).classList.add('on'); window.scrollTo(0,0); }
+
+function renderQ(){
+  var Q = QS[idx];
+  $('qnum').textContent = ('0'+(idx+1)).slice(-2) + ' / 08';
+  $('bar').style.width = ((idx+1)/QS.length*100) + '%';
+  $('q').textContent = Q.q;
+  var box = $('opts'); box.innerHTML = '';
+  Q.o.forEach(function(pair, i){
+    var b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = '<b>' + 'ABCD'[i] + '</b><span>' + pair[0] + '</span>';
+    b.onclick = function(){
+      score[pair[1]] += 1;
+      idx++;
+      if (idx < QS.length) { renderQ(); }
+      else { result(); }
+    };
+    box.appendChild(b);
+  });
+}
+
+function result(){
+  // 主维度 = 最高分；同分时按 疯 > 抽象 > 丧 > 稳 优先（更符合分享欲）
+  var best = order[0], bv = -1;
+  order.forEach(function(k){ if (score[k] > bv) { bv = score[k]; best = k; } });
+
+  // 档位：主维度得分 1-3 → 第 1/2/3 个结果
+  var tier = Math.min(score[best] - 1, 2);
+  if (tier < 0) tier = 0;
+  var R = RES[best][tier];
+
+  // 匹配度：主维度占比越高越"符合"
+  var pct = Math.round(66 + (score[best] / 8) * 32);
+  if (pct > 99) pct = 99;
+
+  $('rname').textContent = R.n;
+  $('rtag').textContent = R.t;
+  $('rmatch').textContent = pct;
+  $('rsym').innerHTML = R.s.map(function(x){ return '<li>'+x+'</li>'; }).join('');
+  $('rrx').innerHTML = R.r.map(function(x){ return '<li class="rx">'+x+'</li>'; }).join('');
+  show('s-res');
+  window.__R = R; window.__pct = pct; window.__best = best;
+}
+
+/* ---------- 生成图片（canvas 1080×1440） ---------- */
+function drawImage(){
+  var W = 1080, H = 1440;
+  var c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  var x = c.getContext('2d');
+  var R = window.__R, pct = window.__pct, best = window.__best;
+
+  // 背景
+  x.fillStyle = '#08080c'; x.fillRect(0,0,W,H);
+  var g1 = x.createRadialGradient(W*0.85,H*0.05,0,W*0.85,H*0.05,W*0.75);
+  g1.addColorStop(0,'rgba(124,92,255,.45)'); g1.addColorStop(1,'rgba(124,92,255,0)');
+  x.fillStyle = g1; x.fillRect(0,0,W,H);
+  var g2 = x.createRadialGradient(W*0.05,H*0.95,0,W*0.05,H*0.95,W*0.6);
+  g2.addColorStop(0,'rgba(34,211,238,.28)'); g2.addColorStop(1,'rgba(34,211,238,0)');
+  x.fillStyle = g2; x.fillRect(0,0,W,H);
+
+  var pad = 78;
+  // 顶栏
+  x.fillStyle = '#b6ff3c'; x.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
+  x.fillText('精神状态鉴定所', pad, 118);
+  x.fillStyle = 'rgba(255,255,255,.5)'; x.font = '400 24px "PingFang SC",sans-serif';
+  x.textAlign = 'right'; x.fillText('v1.0', W-pad, 118); x.textAlign = 'left';
+  x.strokeStyle = 'rgba(255,255,255,.14)'; x.lineWidth = 2;
+  x.beginPath(); x.moveTo(pad, 152); x.lineTo(W-pad, 152); x.stroke();
+
+  // 标签
+  x.fillStyle = 'rgba(182,255,60,.85)'; x.font = '500 26px "PingFang SC",sans-serif';
+  x.fillText('你的精神状态是', pad, 240);
+
+  // 名称（自动换行）
+  x.fillStyle = '#f4f5fa'; x.font = '800 96px "PingFang SC","Microsoft YaHei",sans-serif';
+  wrap(x, R.n, pad, 366, W-pad*2, 108);
+
+  // 一句话
+  x.fillStyle = '#a9aebf'; x.font = '400 34px "PingFang SC",sans-serif';
+  wrap(x, R.t, pad, 500, W-pad*2-20, 52);
+
+  // 匹配度
+  x.fillStyle = '#22d3ee'; x.font = '800 132px "PingFang SC",sans-serif';
+  x.fillText(pct + '%', pad, 700);
+  x.fillStyle = 'rgba(255,255,255,.45)'; x.font = '400 26px "PingFang SC",sans-serif';
+  x.fillText('符合你的现状', pad, 748);
+
+  // 卡片：症状
+  var y = 812;
+  x.strokeStyle = 'rgba(255,255,255,.12)'; x.lineWidth = 2;
+  roundRect(x, pad, y, W-pad*2, 268, 22); x.stroke();
+  x.fillStyle = '#22d3ee'; x.font = '600 24px "PingFang SC",sans-serif';
+  x.fillText('主要症状', pad+34, y+52);
+  x.fillStyle = '#dcdfe9'; x.font = '400 30px "PingFang SC",sans-serif';
+  R.s.forEach(function(s, i){ wrap(x, '· ' + s, pad+34, y+112+i*62, W-pad*2-68, 42); });
+
+  // 卡片：医嘱
+  y = 1112;
+  x.strokeStyle = 'rgba(255,255,255,.12)';
+  roundRect(x, pad, y, W-pad*2, 190, 22); x.stroke();
+  x.fillStyle = '#ffe27a'; x.font = '600 24px "PingFang SC",sans-serif';
+  x.fillText('医嘱', pad+34, y+52);
+  x.fillStyle = '#e7e0c4'; x.font = '400 27px "PingFang SC",sans-serif';
+  wrap(x, R.r[0], pad+34, y+104, W-pad*2-68, 40);
+  if (R.r[1]) wrap(x, R.r[1], pad+34, y+150, W-pad*2-68, 40);
+
+  // 底栏
+  x.fillStyle = 'rgba(255,255,255,.42)'; x.font = '400 24px "PingFang SC",sans-serif';
+  x.fillText('鲸鱼做网页 · 8 道题测你的精神状态', pad, H-62);
+  x.textAlign = 'right';
+  x.fillText('abstract.whale.page', W-pad, H-62); x.textAlign = 'left';
+
+  return c.toDataURL('image/png');
+}
+
+function wrap(ctx, text, x0, y0, maxW, lh){
+  var line = '', n = 0;
+  for (var i=0;i<text.length;i++){
+    var t = line + text[i];
+    if (ctx.measureText(t).width > maxW && line) { ctx.fillText(line, x0, y0 + n*lh); line = text[i]; n++; }
+    else { line = t; }
+  }
+  if (line) ctx.fillText(line, x0, y0 + n*lh);
+  return y0 + (n+1)*lh;
+}
+function roundRect(c,x,y,w,h,r){
+  c.beginPath();
+  c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.quadraticCurveTo(x+w,y,x+w,y+r);
+  c.lineTo(x+w,y+h-r); c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  c.lineTo(x+r,y+h); c.quadraticCurveTo(x,y+h,x,y+h-r);
+  c.lineTo(x,y+r); c.quadraticCurveTo(x,y,x+r,y); c.closePath();
+}
+
+/* ---------- 交互 ---------- */
+$('start').onclick = function(){
+  score = {'疯':0,'丧':0,'抽象':0,'稳':0}; idx = 0;
+  renderQ(); show('s-quiz');
+};
+
+$('mkimg').onclick = function(){
+  var url = drawImage();
+  $('shotimg').src = url;
+  $('dl').href = url;
+  $('shot').classList.add('on');
+};
+$('close').onclick = function(){ $('shot').classList.remove('on'); };
+
+$('reshare').onclick = function(){
+  var R = window.__R, pct = window.__pct;
+  var txt = '我的精神状态是「' + R.n + '」——' + R.t + '\n' +
+            '匹配度 ' + pct + '%\n\n' +
+            '主要症状：\n' + R.s.map(function(s){return '· '+s;}).join('\n') + '\n\n' +
+            '医嘱：' + R.r[0] + '\n\n' +
+            '（8 道题，30 秒，测你的：' + location.origin + location.pathname + '）';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(function(){
+      alert('文案已复制，去群里发吧。');
+    }, function(){ alert(txt); });
+  } else { alert(txt); }
+};
+
+$('again').onclick = function(){
+  score = {'疯':0,'丧':0,'抽象':0,'稳':0}; idx = 0;
+  show('s-cover');
+};
+</script>
+</body>
+</html>
