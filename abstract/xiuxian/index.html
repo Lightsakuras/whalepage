@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>修仙天赋鉴定 · ligsa</title>
+<meta name="description" content="10 道题，测出你适合修什么仙、能修到哪个境界。可以渡劫。">
+<style>
+  :root{
+    --bg:#05060a; --fg:#f3efe2; --dim:#8b8574;
+    --gold:#e8c67a; --jade:#7ce3c0; --ink:#0b0d14;
+    --line:rgba(232,198,122,.18);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:"Songti SC","Noto Serif SC","Source Han Serif SC","STSong","SimSun",serif;
+    min-height:100vh;
+    background-image:radial-gradient(120% 50% at 50% -12%,rgba(232,198,122,.14),transparent 58%),
+                     radial-gradient(90% 45% at 50% 112%,rgba(124,227,192,.10),transparent 60%);
+    background-attachment:fixed;overflow-x:hidden;
+  }
+  .app{width:100%;max-width:620px;margin:0 auto;padding:22px 22px calc(20px + env(safe-area-inset-bottom));
+       display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden}
+  .top{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.22em;color:var(--dim)}
+  .top b{color:var(--gold);font-weight:400}
+
+  /* 进度 */
+  .pbar{height:2px;background:rgba(255,255,255,.07);margin:20px 0 0;border-radius:2px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--jade),var(--gold));transition:width .35s ease}
+
+  /* 题 */
+  .qwrap{flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:6vh 0 18px}
+  .qno{font-size:12px;letter-spacing:.2em;color:var(--dim);margin-bottom:14px}
+  .qtext{font-size:clamp(21px,5.4vw,30px);line-height:1.62;font-weight:700;margin:0 0 26px;text-wrap:balance}
+  .opts{display:flex;flex-direction:column;gap:11px}
+  .opt{width:100%;text-align:left;background:rgba(255,255,255,.035);border:1px solid var(--line);color:var(--fg);
+       border-radius:12px;padding:16px 18px;font:inherit;font-size:16px;line-height:1.5;cursor:pointer;
+       transition:.16s;display:flex;gap:12px;align-items:flex-start}
+  .opt:hover{border-color:rgba(232,198,122,.5);background:rgba(232,198,122,.06)}
+  .opt:active{transform:scale(.99)}
+  .opt span.k{color:var(--gold);font-size:13px;flex:none;padding-top:2px;letter-spacing:.1em}
+  .opt span:last-child{flex:1;min-width:0}
+
+  /* 结果 */
+  .res{display:none;flex-direction:column;gap:0;padding-top:6px}
+  .res.on{display:flex}
+  .kick{font-size:12px;letter-spacing:.24em;color:var(--jade);margin-bottom:10px}
+  .title{font-size:clamp(34px,9vw,58px);line-height:1.18;font-weight:700;margin:0;
+         background:linear-gradient(120deg,#f6e6bd,var(--gold) 45%,#b98f3d);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{margin:14px 0 0;font-size:16px;line-height:1.8;color:#cfc7b2}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+  .cell{border:1px solid var(--line);border-radius:12px;padding:13px 15px;background:rgba(255,255,255,.02)}
+  .cell .k{font-size:11px;letter-spacing:.18em;color:var(--dim);display:block;margin-bottom:6px}
+  .cell .v{font-size:17px;color:var(--fg);font-weight:700;word-break:break-word}
+  .cell.wide{grid-column:1/-1}
+  .poem{margin-top:18px;border-left:2px solid var(--gold);padding:4px 0 4px 14px;color:#cfc7b2;font-size:15px;line-height:1.9}
+  .dh{margin-top:20px;border:1px solid var(--line);border-radius:12px;padding:15px 16px;background:rgba(124,227,192,.04)}
+  .dh .row{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--dim)}
+  .dh b{color:var(--jade);font-size:22px}
+  .dh button{margin-top:12px;width:100%;background:linear-gradient(135deg,#2a3d36,#3d5548);color:#dff7ee;
+             border:1px solid rgba(124,227,192,.35);border-radius:10px;padding:14px;font:inherit;font-size:16px;
+             font-weight:700;cursor:pointer;letter-spacing:.1em}
+  .dh button:active{transform:scale(.99)}
+  .dh .log{margin-top:12px;font-size:14px;line-height:1.7;color:#cfc7b2;min-height:0}
+
+  .bar{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-top:20px}
+  button{font-family:inherit}
+  .primary{background:linear-gradient(135deg,#f0d59b,var(--gold));color:#241a06;font-weight:700;font-size:16px;
+           padding:15px 18px;border:none;border-radius:12px;cursor:pointer;letter-spacing:.06em}
+  .ghost{background:rgba(255,255,255,.05);color:var(--fg);border:1px solid var(--line);font-size:15px;
+         padding:15px 16px;border-radius:12px;cursor:pointer}
+  .primary:active,.ghost:active{transform:scale(.98)}
+  .foot{margin-top:16px;display:flex;justify-content:space-between;font-size:11px;color:#4a463c;letter-spacing:.16em}
+
+  .toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,12px);background:rgba(18,16,12,.95);
+         color:var(--gold);border:1px solid var(--line);padding:11px 20px;border-radius:999px;font-size:14px;
+         opacity:0;pointer-events:none;transition:.24s;z-index:20}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .shot{position:fixed;inset:0;background:rgba(3,4,6,.95);display:none;flex-direction:column;align-items:center;
+        justify-content:center;gap:16px;padding:20px;z-index:30}
+  .shot.on{display:flex}
+  .shot img{max-width:100%;max-height:72vh;border-radius:12px;box-shadow:0 24px 70px rgba(0,0,0,.7)}
+  .shot p{margin:0;font-size:13px;color:var(--dim);text-align:center;line-height:1.7}
+  .shot .row{display:flex;gap:10px}
+
+  @keyframes flash{0%,100%{opacity:0}8%{opacity:.9}16%{opacity:.1}26%{opacity:.8}38%{opacity:.05}52%{opacity:.6}70%{opacity:0}}
+  .bolt{position:fixed;inset:0;background:radial-gradient(circle at 50% 40%,#fff,rgba(200,240,255,.4) 40%,transparent 70%);
+        pointer-events:none;opacity:0;z-index:25}
+  .bolt.go{animation:flash 1.6s ease-out}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><span><b>ligsa</b> · 修仙鉴定</span><span>NO.05</span></div>
+  <div class="pbar" id="pbar"><i id="pbarIn"></i></div>
+
+  <div class="qwrap" id="qwrap">
+    <div class="qno" id="qno">第一问 / 共 10 问</div>
+    <h1 class="qtext" id="qtext">加载中</h1>
+    <div class="opts" id="opts"></div>
+  </div>
+
+  <div class="res" id="res">
+    <div class="kick" id="rKick">鉴定完毕</div>
+    <h1 class="title" id="rTitle">剑修</h1>
+    <p class="sub" id="rSub"></p>
+
+    <div class="grid">
+      <div class="cell"><span class="k">灵 根</span><span class="v" id="rRoot">—</span></div>
+      <div class="cell"><span class="k">境 界</span><span class="v" id="rRealm">—</span></div>
+      <div class="cell"><span class="k">宗 门</span><span class="v" id="rSect">—</span></div>
+      <div class="cell"><span class="k">法 宝</span><span class="v" id="rItem">—</span></div>
+      <div class="cell wide"><span class="k">主 修 功 法</span><span class="v" id="rSkill">—</span></div>
+    </div>
+
+    <div class="poem" id="rPoem"></div>
+
+    <div class="dh">
+      <div class="row"><span>渡劫成功率</span><b id="rRate">—%</b></div>
+      <button id="dujie">现在就渡劫</button>
+      <div class="log" id="rLog"></div>
+    </div>
+
+    <div class="bar">
+      <button class="primary" id="again">重新投胎</button>
+      <button class="ghost" id="copy">复制</button>
+      <button class="ghost" id="save">存图</button>
+    </div>
+  </div>
+
+  <div class="foot"><span>ligsa</span><span>ligsa.work/xiuxian</span></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="bolt" id="bolt"></div>
+<div class="shot" id="shot">
+  <p>长按图片保存到相册<br>或者点下面按钮下载</p>
+  <img id="shotImg" alt="修仙档案">
+  <div class="row">
+    <button class="primary" id="dl">下载图片</button>
+    <button class="ghost" id="closeShot">关闭</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var QS = [
+    { q:'你一脚踩空，穿过一层雾，落在修仙界。睁开眼第一件事：',
+      o:[ ['找个宗门，先拜师','dan',2], ['先摸清谁最强，然后抱大腿','fu',2], ['拔剑，往山里走','jian',3], ['找个山沟，自己练','mo',2] ] },
+    { q:'你分到的法器是：',
+      o:[ ['一把剑，很旧，但认你','jian',3], ['一只药炉，看着像古董','dan',3], ['一支符笔，写啥成啥','fu',3], ['什么都没有，你自己','ti',3] ] },
+    { q:'第一次遇上天劫，你：',
+      o:[ ['迎上去，扛','ti',2, 'jian',1], ['布阵，躲','fu',2], ['吞了它','mo',3], ['喊师兄','dan',1, 'fu',1] ] },
+    { q:'你的修炼速度：',
+      o:[ ['快，但不稳','mo',2], ['慢，但没走过火','ti',2], ['全靠脑子，不靠打坐','fu',3], ['靠资源，堆出来的','dan',2] ] },
+    { q:'修仙界里你最怕：',
+      o:[ ['走火入魔，变成别人的故事','dan',2], ['被人从背后捅一刀','ti',1, 'jian',1], ['三百年无事可做','mo',2], ['一辈子没人记得你','jian',2] ] },
+    { q:'有人当众抢了你的机缘：',
+      o:[ ['当场打回来','jian',3], ['笑着让，记他一辈子','mo',3], ['换一条路走，山不转我转','fu',2], ['算了，我还有别的办法','dan',2] ] },
+    { q:'闭关十年，你出来发现：',
+      o:[ ['修为暴涨，肉身如铁','ti',3], ['走火入魔，但也变强了','mo',2, 'ti',1], ['什么都没悟到，但想通了一件事','fu',2], ['境界没动，丹药倒是吃空了','dan',2] ] },
+    { q:'你觉得修仙界最大的骗局是：',
+      o:[ ['努力就能成仙','mo',3], ['灵根决定一切','ti',2], ['宗门会护着你','jian',2], ['丹药能解决一切','dan',1, 'fu',1] ] },
+    { q:'有人给你取道号，你选：',
+      o:[ ['青山','jian',2], ['无涯','mo',2], ['半仙','fu',2], ['老实人','ti',2] ] },
+    { q:'最后一个问题 —— 你为什么要修仙？',
+      o:[ ['想变强，强到没人能管我','jian',3], ['想活得久一点','dan',3], ['想弄明白这个世界','fu',3], ['不服','mo',3] ] }
+  ];
+
+  var SCHOOLS = {
+    jian:{ n:'剑修', t:'一剑破万法',
+      d:'你的道很直：说不过就打过。别人修仙靠熬，你靠一口气。',
+      sect:'万剑宗', skills:['九转玄雷诀','无相破虚剑经','太虚斩月真解','青莲剑歌'],
+      items:['青索剑','断虹刃','三尺青锋','寒潭剑匣'],
+      poem:'心若不直，剑便不直。<br>人间万法，一剑可破。' },
+    dan:{ n:'丹修', t:'一颗丹药定生死',
+      d:'你不爱打，但全修仙界都欠你人情。活到最后的人，通常是会炼药的。',
+      sect:'丹霞谷', skills:['太虚归元经','九转还阳真解','紫府养神诀','归元造化心法'],
+      items:['聚灵瓶','九转丹炉','紫金葫芦','百草囊'],
+      poem:'不求一夜飞升，<br>只求每一年都还在。' },
+    fu:{ n:'符修', t:'画符的人，从不硬碰',
+      d:'你擅长用规则办事。别人用力，你用巧。缺点是——你画的符，自己也不敢全信。',
+      sect:'天符门', skills:['无相符箓真解','太虚爻变经','紫府天机诀','北斗引星符法'],
+      items:['朱砂符笔','乾坤符囊','太虚镜','落魂铃'],
+      poem:'一笔落下，天地为纸。<br>我写什么，就是什么。' },
+    ti:{ n:'体修', t:'肉身即道场',
+      d:'你不修花活，只修一副扛得住的身子。别人渡劫靠法宝，你渡劫靠挨。',
+      sect:'金刚寺', skills:['九转锻体真经','不动明王心法','太虚铜皮诀','归元血魄经'],
+      items:['玄铁护腕','镇岳杵','不动明王印','雷纹战甲'],
+      poem:'天塌下来，先砸到我。<br>但我还站着。' },
+    mo:{ n:'魔修', t:'逆天而行',
+      d:'规则在你眼里是给别人定的。你会走得比谁都快，也更容易在某一天变成别人的故事。',
+      sect:'幽泉殿', skills:['玄阴噬灵经','九转炼魂诀','无相蚀骨真解','幽泉血影心法'],
+      items:['血魂幡','噬灵珠','幽泉骨笛','九幽锁'],
+      poem:'天道要我低头，<br>我把头抬得更高。' }
+  };
+
+  var REALMS = ['练气','筑基','金丹','元婴','化神','炼虚','合体','大乘','渡劫','地仙'];
+  var ROOTS = [
+    { min:25, n:'天灵根', d:'万中无一' },
+    { min:21, n:'变异灵根 · 雷', d:'天生带煞' },
+    { min:16, n:'双灵根', d:'根骨上佳' },
+    { min:11, n:'三灵根', d:'中规中矩' },
+    { min:0,  n:'五灵根', d:'杂而不精，但能修' }
+  ];
+
+  var cur = 0, score = 0, dim = {jian:0,dan:0,fu:0,ti:0,mo:0}, realmIdx = 0, luck = 0;
+
+  var $ = function(id){ return document.getElementById(id); };
+  function say(t){ var e=$('toast'); e.textContent=t; e.classList.add('on'); clearTimeout(say._t); say._t=setTimeout(function(){e.classList.remove('on')},1600); }
+
+  function renderQ(){
+    var q = QS[cur];
+    $('qno').textContent = '第 ' + (cur+1) + ' 问 / 共 ' + QS.length + ' 问';
+    $('qtext').textContent = q.q;
+    $('pbarIn').style.width = (cur/QS.length*100) + '%';
+    var box = $('opts');
+    box.innerHTML = '';
+    q.o.forEach(function(o, i){
+      var b = document.createElement('button');
+      b.className = 'opt';
+      b.innerHTML = '<span class="k">' + 'ABCD'[i] + '</span><span>' + o[0] + '</span>';
+      b.onclick = function(){
+        for (var j=1;j<o.length;j+=2){ dim[o[j]] = (dim[o[j]]||0) + o[j+1]; }
+        score += 2;
+        cur++;
+        if (cur >= QS.length) finish(); else renderQ();
+      };
+      box.appendChild(b);
+    });
+  }
+
+  function pickSchool(){
+    var best='jian', bv=-1;
+    Object.keys(dim).forEach(function(k){ if (dim[k] > bv){ bv=dim[k]; best=k; } });
+    return best;
+  }
+  function pickRoot(){
+    var s = dim[pickSchool()];
+    for (var i=0;i<ROOTS.length;i++) if (s >= ROOTS[i].min) return ROOTS[i];
+    return ROOTS[ROOTS.length-1];
+  }
+  function realmFromScore(){
+    var s = Math.max(0, dim[pickSchool()]) / 26;
+    var idx = Math.round(Math.pow(s, .85) * 6.5 + (Math.random()*1.2 - .5));
+    return Math.max(0, Math.min(REALMS.length-1, idx));
+  }
+  function pickOne(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function finish(){
+    $('pbarIn').style.width = '100%';
+    var k = pickSchool(), S = SCHOOLS[k];
+    realmIdx = realmFromScore();
+    luck = 38 + Math.min(26, Math.round(dim[pickSchool()]*1.5)) + Math.floor(Math.random()*7);
+    var root = pickRoot();
+    var skill = pickOne(S.skills), item = pickOne(S.items);
+
+    $('qwrap').style.display = 'none';
+    $('res').classList.add('on');
+    $('rTitle').textContent = S.n;
+    $('rSub').innerHTML = '<b>' + S.t + '</b><br>' + S.d;
+    $('rRoot').textContent = root.n;
+    $('rRealm').textContent = REALMS[realmIdx];
+    $('rSect').textContent = S.sect;
+    $('rItem').textContent = item;
+    $('rSkill').textContent = '《' + skill + '》';
+    $('rPoem').innerHTML = S.poem;
+    $('rRate').textContent = luck + '%';
+    $('rKick').textContent = '鉴定完毕 · ' + root.d;
+    $('rLog').innerHTML = '';
+    window.scrollTo({top:0, behavior:'smooth'});
+    document.title = S.n + ' · ' + REALMS[realmIdx] + ' · ligsa';
+  }
+
+  $('dujie').onclick = function(){
+    var bolt = $('bolt');
+    bolt.classList.remove('go'); void bolt.offsetWidth; bolt.classList.add('go');
+    $('dujie').disabled = true;
+    var log = $('rLog');
+    log.innerHTML = '天雷落下来了……';
+    setTimeout(function(){
+      var ok = Math.random()*100 < luck;
+      if (ok){
+        if (realmIdx < REALMS.length-1){
+          realmIdx++;
+          $('rRealm').textContent = REALMS[realmIdx];
+          log.innerHTML = '渡劫成功。境界进至 <b style="color:#7ce3c0">' + REALMS[realmIdx] + '</b>。<br>运气：' + luck + '%（下次会变）';
+        } else {
+          log.innerHTML = '你已经在<b style="color:#7ce3c0">地仙</b>了。再渡，就是飞升，<br>没人知道飞升之后是什么。';
+        }
+        luck = Math.max(20, luck - 8);
+      } else {
+        if (realmIdx > 0) realmIdx--;
+        $('rRealm').textContent = REALMS[realmIdx];
+        log.innerHTML = '<b style="color:#e08a7a">渡劫失败</b>，境界跌至 ' + REALMS[realmIdx] + '。<br>雷劈完，你还活着，这就够了。';
+        luck = Math.min(92, luck + 6);
+      }
+      $('rRate').textContent = luck + '%';
+      $('dujie').disabled = false;
+      $('dujie').textContent = '再渡一次';
+    }, 1700);
+  };
+
+  $('again').onclick = function(){
+    cur=0; score=0; dim={jian:0,dan:0,fu:0,ti:0,mo:0}; realmIdx=0;
+    $('res').classList.remove('on');
+    $('qwrap').style.display = 'flex';
+    $('dujie').textContent = '现在就渡劫';
+    renderQ();
+    window.scrollTo({top:0,behavior:'instant'});
+  };
+
+  function summary(){
+    var k = pickSchool(), S = SCHOOLS[k];
+    return '我的修仙天赋：' + S.n + '\n境界：' + REALMS[realmIdx] + '\n灵根：' + $('rRoot').textContent +
+           '\n宗门：' + S.sect + '\n法宝：' + $('rItem').textContent + '\n主修：' + $('rSkill').textContent +
+           '\n\n测测你适合修什么仙 → ligsa.work/xiuxian';
+  }
+
+  $('copy').onclick = function(){
+    var txt = summary();
+    var done = function(){ say('已复制'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, function(){ fb(txt,done); });
+    else fb(txt, done);
+  };
+  function fb(txt, cb){
+    var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); cb(); }catch(e){ say('复制失败，长按文字手动选'); }
+    document.body.removeChild(ta);
+  }
+
+  // ---- 出图 ----
+  var W=1080, H=1440;
+  function makeImage(){
+    var k = pickSchool(), S = SCHOOLS[k];
+    var c = document.createElement('canvas'); c.width=W; c.height=H;
+    var x = c.getContext('2d');
+    var g = x.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,'#0a0b10'); g.addColorStop(.5,'#05060a'); g.addColorStop(1,'#0d0a06');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+    var rg = x.createRadialGradient(W*.5,-H*.05,0,W*.5,-H*.05,W*.95);
+    rg.addColorStop(0,'rgba(232,198,122,.20)'); rg.addColorStop(1,'rgba(232,198,122,0)');
+    x.fillStyle=rg; x.fillRect(0,0,W,H*.7);
+
+    var pad=96;
+    x.fillStyle='#e8c67a'; x.font='400 32px "Songti SC","Noto Serif SC",serif';
+    x.fillText('ligsa · 修仙天赋鉴定', pad, 128);
+
+    x.fillStyle='#8b8574'; x.font='400 24px "Songti SC",serif';
+    x.fillText('修仙档案', pad, 196);
+
+    // 流派
+    x.fillStyle='#f6e6bd'; x.font='700 104px "Songti SC","Noto Serif SC",serif';
+    x.fillText(S.n, pad, 330);
+    x.fillStyle='#7ce3c0'; x.font='400 34px "Songti SC",serif';
+    x.fillText(S.t, pad, 392);
+
+    // 分隔
+    x.fillStyle='rgba(232,198,122,.25)'; x.fillRect(pad, 440, W-pad*2, 2);
+
+    // 四行档案
+    var rows = [
+      ['灵 根', $('rRoot').textContent],
+      ['境 界', REALMS[realmIdx]],
+      ['宗 门', S.sect],
+      ['法 宝', $('rItem').textContent],
+      ['功 法', $('rSkill').textContent]
+    ];
+    var y = 512;
+    rows.forEach(function(r){
+      x.fillStyle='#8b8574'; x.font='400 26px "Songti SC",serif';
+      x.fillText(r[0], pad, y);
+      x.fillStyle='#f3efe2'; x.font='700 34px "Songti SC",serif';
+      x.fillText(r[1], pad + 170, y);
+      y += 84;
+    });
+
+    // 批语
+    x.fillStyle='rgba(232,198,122,.25)'; x.fillRect(pad, y+6, W-pad*2, 2);
+    var poem = S.poem.replace(/<br>/g,'\n');
+    x.fillStyle='#cfc7b2'; x.font='400 30px "Songti SC",serif';
+    var lines = poem.split('\n');
+    for (var i=0;i<lines.length;i++) x.fillText(lines[i], pad, y + 96 + i*56);
+
+    // 渡劫成功率
+    x.fillStyle='#8b8574'; x.font='400 26px "Songti SC",serif';
+    x.fillText('渡劫成功率', pad, y + 300);
+    x.fillStyle='#7ce3c0'; x.font='700 34px "Songti SC",serif';
+    x.fillText($('rRate').textContent, pad + 170, y + 300);
+
+    // 底部
+    x.fillStyle='#4a463c'; x.font='400 26px "Songti SC",serif';
+    x.fillText('ligsa.work/xiuxian', pad, H-84);
+    x.textAlign='right'; x.fillText('NO.05', W-pad, H-84); x.textAlign='left';
+    return c.toDataURL('image/png');
+  }
+
+  var shot=$('shot'), shotImg=$('shotImg'), lastUrl='';
+  $('save').onclick = function(){ lastUrl = makeImage(); shotImg.src = lastUrl; shot.classList.add('on'); };
+  $('closeShot').onclick = function(){ shot.classList.remove('on'); };
+  $('dl').onclick = function(){
+    var a=document.createElement('a'); a.href = lastUrl || makeImage();
+    a.download = 'ligsa-xiuxian-' + Date.now() + '.png'; a.click(); say('已保存');
+  };
+
+  renderQ();
+})();
+</script>
+</body>
+</html>
